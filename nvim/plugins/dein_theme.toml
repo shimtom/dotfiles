@@ -1,0 +1,32 @@
+[[plugins]]
+repo = 'flazz/vim-colorschemes'
+
+[[plugins]]
+repo = 'sjl/badwolf'
+
+[[plugins]]
+repo = 'tomasr/molokai'
+hook_add = '''
+let g:molokai_original = 1
+'''
+
+[[plugins]]
+repo = 'nanotech/jellybeans.vim'
+
+[[plugins]]
+repo = 'joshdick/onedark.vim'
+
+[[plugins]]
+repo = 'rakr/vim-one'
+
+[[plugins]]
+repo = 'w0ng/vim-hybrid'
+hook_add = '''
+    set background=dark
+'''
+
+[[plugins]]
+repo = 'jdkanani/vim-material-theme'
+
+[[plugins]]
+repo = 'jacoborus/tender.vim'

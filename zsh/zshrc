@@ -1,0 +1,57 @@
+#
+# Executes commands at the start of an interactive session.
+#
+
+# Source Prezto.
+if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
+  source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
+fi
+
+# Customize to your needs...
+
+# zplug
+source ~/.zplug/init.zsh
+
+zplug "sorin-ionescu/prezto"
+zplug "mollifier/anyframe"
+zplug "b4b4r07/enhancd", use:init.sh
+zplug "bobthecow/git-flow-completion", use:git-flow-completion.zsh
+zplug load
+
+
+## anyframe
+bindkey '^r' anyframe-widget-put-history
+
+## enhanced
+export ENHANCD_DISABLE_DOT=1
+export ENHANCD_DISABLE_HOME=1
+
+## pyenv
+export PYENV_ROOT=/usr/local/var/pyenv
+export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+if which pyenv > /dev/null; then
+  eval "$(pyenv init -)"
+fi
+
+## pyenv-virtualenv
+if which pyenv-virtualenv-init > /dev/null; then
+  eval "$(pyenv virtualenv-init -)";
+fi
+
+## go
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+
+## nvm
+export NVM_DIR=$HOME/.nvm
+. $(brew --prefix nvm)/nvm.sh
+
+## rbenv
+export RBENV_ROOT=/usr/local/var/rbenv
+eval "$(rbenv init -)"
+
+## nvim
+export XDG_CONFIG_HOME="$HOME/.config"
+
+## alias
+alias pip-upgrade='pip freeze --local | grep -v "^\-e" | cut -d = -f 1 | xargs pip install -U'
