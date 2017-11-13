@@ -26,18 +26,6 @@ bindkey '^r' anyframe-widget-put-history
 export ENHANCD_DISABLE_DOT=1
 export ENHANCD_DISABLE_HOME=1
 
-## pyenv
-export PYENV_ROOT=/usr/local/var/pyenv
-export PYENV_VIRTUALENV_DISABLE_PROMPT=1
-if which pyenv > /dev/null; then
-  eval "$(pyenv init -)"
-fi
-
-## pyenv-virtualenv
-if which pyenv-virtualenv-init > /dev/null; then
-  eval "$(pyenv virtualenv-init -)";
-fi
-
 ## go
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
@@ -54,4 +42,8 @@ eval "$(rbenv init -)"
 export XDG_CONFIG_HOME="$HOME/.config"
 
 ## alias
-alias pip-upgrade='pip freeze --local | grep -v "^\-e" | cut -d = -f 1 | xargs pip install -U'
+alias pip-upgrade='pip3 freeze --local | grep -v "^\-e" | cut -d = -f 1 | xargs pip3 install -U'
+
+## brwe
+brew-cask-upgrade(){ for app in $(brew cask list); do local latest="$(brew cask info "${app}" | awk 'NR==1{print $2}')"; local versions=($(ls -1 "/usr/local/Caskroom/${app}/.metadata/")); local current=$(echo ${versions} | awk '{print $NF}'); if [[ "${latest}" = "latest" ]]; then echo "[!] ${app}: ${current} == ${latest}"; [[ "$1" = "-f" ]] && brew cask install "${app}" --force; continue; elif [[ "${current}" = "${latest}" ]]; then continue; fi; echo "[+] ${app}: ${current} -> ${latest}"; brew cask uninstall "${app}" --force; brew cask install "${app}"; done; }
+
