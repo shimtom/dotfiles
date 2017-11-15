@@ -9,7 +9,6 @@ function status() {
     echo "---> ${@}"
 }
 
-# mac
 function _pkg-manager() {
     status "pkg-manager"
     case ${info[0]} in
