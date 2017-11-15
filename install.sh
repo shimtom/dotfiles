@@ -112,6 +112,19 @@ function _neovim() {
     pip3 install --upgrade neovim
 }
 
+function _tex(parameter) {
+    case ${os} in
+        mac)
+            brew install ghostscript
+            brew cask install basictex
+            sudo tlmgr update --self --all
+            sudo tlmgr paper a4
+            sudo tlmgr install collection-langjapanese
+        linux)
+            wget http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz -P /tmp/
+            tar zxf /tmp/install-tl-unx.tar.gz
+            cd /tmp/install-tl* && sudo ./install-tl
+}
 
 _pkg-manager
 _bash
