@@ -9,6 +9,20 @@ get_os_bit() {
     echo $(uname -m);
 }
 
+get_os_name() {
+    if [ "$(uname)" == 'Darwin' ]; then
+        os="mac"
+    elif [ "$(expr substr $(uname -s) 1 5)" == 'Linux' ]; then
+        os='linux'
+    elif [ "$(expr substr $(uname -s) 1 10)" == 'MINGW32_NT' ]; then
+        os="cygwin"
+    else
+        os="unkown"
+    fi
+
+    echo ${os}
+}
+
 # Get Linux distribution name
 get_os_distribution() {
     if   [ -e /etc/debian_version ] ||
@@ -50,9 +64,6 @@ get_os_distribution() {
     elif [ -e /etc/gentoo-release ]; then
         # Gentoo Linux
         distri_name="gentoo"
-    elif [ "$(uname)" == 'Darwin' ]; then
-        # mac os
-        distri_name="mac"
     else
         # Other
         echo "unkown distribution"
@@ -64,7 +75,7 @@ get_os_distribution() {
 
 # Get distribution and bit
 get_os_info() {
-   echo $(get_os_distribution) $(get_os_bit)
+   echo $(get_os_name) $(get_os_distribution) $(get_os_bit)
 }
 
 get_os_info
