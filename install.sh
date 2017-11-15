@@ -1,4 +1,4 @@
-#!/bin/bash -eux
+#!/bin/bash -eu
 
 DOTDIR=$(cd $(dirname $0); pwd)
 
