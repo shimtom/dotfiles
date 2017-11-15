@@ -3,28 +3,28 @@
 DOTDIR=$(cd $(dirname $0); pwd)
 
 declare -a info=($(${DOTDIR}/bin/get_os_info))
-
-
-function status() {
-    echo "---> ${@}"
-}
+os=${info[0]}
+dist=${info[1]}
+bit=${info[2]}
 
 function _pkg-manager() {
-    status "pkg-manager"
-    case ${info[0]} in
-        ubuntu | debian)
-            sudo apt update && sudo apt upgrade -y
-            sudo apt install -y software-properties-common
-            ;;
+    case ${os} in
         mac)
             /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
             brew tap caskroom/cask
             brew update && brew upgrade
             ;;
-        *)
-            echo "unsupported distribution(${info[0]})"
-            return 1
-            ;;
+        linux)
+            case ${dist} in
+                ubuntu | debian)
+                    sudo apt update && sudo apt upgrade -y
+                    sudo apt install -y software-properties-common
+                    ;;
+                *)  echo "unsupported distribution(${dist})"
+                    return 1 ;;
+            esac
+        *)  echo "unsupported os(${os})"
+            return 1 ;;
     esac
 
     return 0
@@ -37,15 +37,17 @@ function _bash() {
 }
 
 function _zsh(){
-    case ${info[0]} in
-        ubuntu | debian)
-            sudo apt install zsh ;;
+    case ${os} in
         mac)
             brew install zsh ;;
-        *)
-            echo "unsupported distribution(${info[0]})"
-            return 1
-            ;;
+        linux)
+            case ${dist} in
+                ubuntu | debian)
+                    sudo apt install zsh ;;
+                *)  echo "unsupported distribution(${dist})"
+                    return 1 ;;
+        *)  echo "unsupported os(${os})"
+            return 1 ;;
     esac
 
     ln -s -f ${DOTDIR}/zsh/zlogin ~/.zlogin
@@ -59,17 +61,17 @@ function _zsh(){
 }
 
 function _python3(){
-    case ${info[0]} in
-        ubuntu | debian)
-            sudo apt install -y python-qt4 python3-dev python3-pip python3-setuptools python3-venv
-            ;;
+    case ${os} in
         mac)
-            brew install python3
-            ;;
-        *)
-            echo "unsupported distribution(${info[0]})"
-            return 1
-            ;;
+            brew install python3 ;;
+        linux)
+            case ${dist} in
+                ubuntu | debian)
+                    sudo apt install -y python-qt4 python3-dev python3-pip python3-setuptools python3-venv ;;
+                *)  echo "unsupported distribution(${dist})"
+                    return 1 ;;
+        *)  echo "unsupported os(${os})"
+            return 1 ;;
     esac
 }
 
@@ -81,32 +83,23 @@ function _zplug() {
 }
 
 function _neovim() {
-    case ${info[0]} in
-        ubuntu | debian)
-            if ! type "add-apt-repository" > /dev/null 2>&1; then
-                _pkg-manager
-            fi
-            sudo add-apt-repository ppa:neovim-ppa/unstable
-            sudo apt update
-            sudo apt install neovim
-            ;;
+    case ${os} in
         mac)
-            if ! type "brew" > /dev/null 2>&1; then
-                _pkg-manager
-            fi
-            brew install python3
-            ;;
-        *)
-            echo "unsupported distribution(${info[0]})"
-            return 1
-            ;;
+            brew install neovim ;;
+        linux)
+            case ${dist} in
+                ubuntu | debian)
+                    sudo add-apt-repository ppa:neovim-ppa/unstable
+                    sudo apt update
+                    sudo apt install neovim ;;
+                *)  echo "unsupported distribution(${dist})"
+                    return 1 ;;
+        *)  echo "unsupported os(${os})"
+            return 1 ;;
     esac
-    # link neovim config
-    ln -s -f ${DOTDIR%/}/nvim/ ~/.config/nvim
 
-    if ! type "pip3" > /dev/null 2>&1; then
-        _python3
-    fi
+    # link neovim config
+    ln -s -f ${DOTDIR}/nvim/ ~/.config/nvim
     # install neovim python package
     pip3 install --upgrade neovim
 }
