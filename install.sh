@@ -85,7 +85,7 @@ function _zplug() {
       zsh -c "source ~/.zplug/init.zsh && zplug install"
     fi
     ln -s -f ~/.zplug/repos/sorin-ionescu/prezto ~/.zprezto
-    ln -s -f ${DOTDIR}/zsh/prezto/module/prompt/functions/prompt_paradigm_setup ~/.zprezto/modules/prompt/functions/prompt_paradigm_setup
+    ln -s -f ${DOTDIR}/zsh/prezto/modules/prompt/functions/prompt_paradigm_setup ~/.zprezto/modules/prompt/functions/prompt_paradigm_setup
 }
 
 function _neovim() {
@@ -113,10 +113,10 @@ function _neovim() {
 }
 
 
-# _pkg-manager
-# _bash
-# _zsh
-# _python3
+_pkg-manager
+_bash
+_zsh
+_python3
 _zplug
 _neovim
 
