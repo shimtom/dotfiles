@@ -1,4 +1,4 @@
-#!/bin/bash -eu
+#!/bin/bash -eux
 
 DOTDIR=$(cd $(dirname $0); pwd)
 
@@ -22,7 +22,7 @@ function _pkg-manager() {
                     ;;
                 *)  echo "unsupported distribution(${dist})"
                     return 1 ;;
-            esac
+            esac ;;
         *)  echo "unsupported os(${os})"
             return 1 ;;
     esac
@@ -46,6 +46,7 @@ function _zsh(){
                     sudo apt install zsh ;;
                 *)  echo "unsupported distribution(${dist})"
                     return 1 ;;
+            esac ;;
         *)  echo "unsupported os(${os})"
             return 1 ;;
     esac
@@ -70,16 +71,21 @@ function _python3(){
                     sudo apt install -y python-qt4 python3-dev python3-pip python3-setuptools python3-venv ;;
                 *)  echo "unsupported distribution(${dist})"
                     return 1 ;;
+            esac ;;
         *)  echo "unsupported os(${os})"
             return 1 ;;
     esac
 }
 
 function _zplug() {
-    curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
-
-    zplug install
-    ln -s -f zsh/prezto/module/prompt/functions/prompt_paradigm_setup ~/.zprezto/module/prompt/functions/prompt_paradigm_setup
+    if [ ! -d ~/.zplug ]; then
+      curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
+    fi
+    if ! zsh -c "source ~/.zplug/init.zsh && zplug check"; then
+      zsh -c "source ~/.zplug/init.zsh && zplug install"
+    fi
+    ln -s -f ~/.zplug/repos/sorin-ionescu/prezto ~/.zprezto
+    ln -s -f ${DOTDIR}/zsh/prezto/module/prompt/functions/prompt_paradigm_setup ~/.zprezto/modules/prompt/functions/prompt_paradigm_setup
 }
 
 function _neovim() {
@@ -94,20 +100,24 @@ function _neovim() {
                     sudo apt install neovim ;;
                 *)  echo "unsupported distribution(${dist})"
                     return 1 ;;
+            esac ;;
         *)  echo "unsupported os(${os})"
             return 1 ;;
     esac
 
     # link neovim config
+    mkdir -p ~/.config
     ln -s -f ${DOTDIR}/nvim/ ~/.config/nvim
     # install neovim python package
     pip3 install --upgrade neovim
 }
 
 
-_pkg-manager
-_bash
-_zsh
-_python3
+# _pkg-manager
+# _bash
+# _zsh
+# _python3
 _zplug
 _neovim
+
+echo "finish set up"
