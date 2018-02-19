@@ -41,7 +41,9 @@ $ sudo sh -c "./install.sh"
     ```
 
 3. set up zsh
+
     1. install zsh
+
         ```bash
         brew install zsh
         ```
@@ -63,7 +65,9 @@ $ sudo sh -c "./install.sh"
         ```
 
 4. set up zplug
+
     1. install zplug
+
         ```bash
         curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh| zsh
         ```
