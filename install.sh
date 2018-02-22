@@ -93,27 +93,37 @@ function _zplug() {
 }
 
 function _neovim() {
+    status "Install neovim"
     case ${os} in
         mac)
             brew install neovim ;;
         linux)
-            case ${dist} in
-                ubuntu | debian)
-                    sudo add-apt-repository ppa:neovim-ppa/unstable
-                    sudo apt update
-                    sudo apt install neovim ;;
-                *)  echo "unsupported distribution(${dist})"
-                    return 1 ;;
-            esac ;;
+            curl -LO https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage -o /usr/local/bin/nvim
+            chmod u+x /usr/loca/bin/nvim ;;
         *)  echo "unsupported os(${os})"
             return 1 ;;
     esac
 
-    # link neovim config
-    mkdir -p ~/.config
-    ln -s -f ${DOTDIR}/nvim/ ~/.config/nvim
+    status "Set up neovim packages"
     # install neovim python package
     pip3 install --upgrade neovim
+    # install dein.vim
+    curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > /tmp/installer.sh
+    mkdir -p ~/.cache
+    sh /tmp/installer.sh ~/.cache/dein
+    # link neovim dotfiles
+    mkdir -p ~/.config/nvim/plugins
+    ln -s -f ${DOTDIR}/nvim/init.vim ~/.config/nvim/init.vim
+    ln -s -f ${DOTDIR}/nvim/editor.vim ~/.config/nvim/editor.vim
+    ln -s -f ${DOTDIR}/nvim/core.vim ~/.config/nvim/core.vim
+    ln -s -f ${DOTDIR}/nvim/appearance.vim ~/.config/nvim/appearance.vim
+    ln -s -f ${DOTDIR}/nvim/plugins/dein.toml ~/.config/nvim/plugins/dein.toml
+    ln -s -f ${DOTDIR}/nvim/plugins/dein_lazy.toml ~/.config/nvim/plugins/dein_lazy.toml
+    ln -s -f ${DOTDIR}/nvim/plugins/dein_theme.toml ~/.config/nvim/plugins/dein_theme.toml
+    ln -s -f ${DOTDIR}/nvim/plugins/dein_python.toml ~/.config/nvim/plugins/dein_python.toml
+
+    status "Neovim packages installed for the first startup"
+    echo
 }
 
 function _tex() {

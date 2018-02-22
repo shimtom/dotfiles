@@ -88,9 +88,21 @@ $ sudo sh -c "./install.sh"
     brew install python3
     ```
 
-6. install neovim
+6. setup neovim
+  1. install neovim
     ```bash
     brew install neovim
+    ```
+  2. install plugins
+    ```bash
+    pip3 install --upgrade neovim
+    mkdir -p ~/.config
+    curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > /tmp/installer.sh
+    sh /tmp/installer.sh ~/.cache/dein
+    ```
+  3. link dotfiles
+    ```bash
+    ln -s -f ${DOTDIR}/nvim/ ~/.config/nvim
     ```
 
 7. set up latex
