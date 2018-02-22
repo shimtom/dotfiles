@@ -23,6 +23,11 @@ endif
 filetype plugin indent on
 syntax enable
 
+" install plugins on startup.
+if dein#check_install()
+  call dein#install()
+endif
+
 if (has("termguicolors"))
  set termguicolors
 endif
