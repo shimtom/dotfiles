@@ -14,6 +14,7 @@ function status() {
 function _pkg-manager() {
     case ${os} in
         mac)
+            status "set up homebrew to install dependencies"
             /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
             brew tap caskroom/cask
             brew update && brew upgrade
@@ -21,6 +22,7 @@ function _pkg-manager() {
         linux)
             case ${dist} in
                 ubuntu | debian)
+                    status "upgrade apt to install dependencies"
                     sudo apt update && sudo apt upgrade -y
                     sudo apt install -y software-properties-common
                     ;;
@@ -34,14 +36,27 @@ function _pkg-manager() {
     return 0
 }
 
-function _bash() {
+function bash() {
+    status "set up bash dotfiles"
     ln -s -f ${DOTDIR}/bash/bashrc ~/.bashrc
     ln -s -f ${DOTDIR}/bash/bash_profile ~/.bash_profile
     ln -s -f ${DOTDIR}/bash/bash_logout ~/.bash_logout
 }
 
-function _zsh(){
+function _zplug() {
+    if [ ! -d ~/.zplug ]; then
+      curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
+    fi
+    if ! zsh -c "source ~/.zplug/init.zsh && zplug check"; then
+      zsh -c "source ~/.zplug/init.zsh && zplug install"
+    fi
+    ln -s -f ~/.zplug/repos/sorin-ionescu/prezto ~/.zprezto
+    ln -s -f ${DOTDIR}/zsh/prezto/modules/prompt/functions/prompt_paradigm_setup ~/.zprezto/modules/prompt/functions/prompt_paradigm_setup
+}
+
+function zsh(){
     case ${os} in
+        status "set up zsh dotfiles"
         mac)
             brew install zsh ;;
         linux)
@@ -62,6 +77,8 @@ function _zsh(){
     ln -s -f ${DOTDIR}/zsh/zshenv ~/.zshenv
     ln -s -f ${DOTDIR}/zsh/zshrc ~/.zshrc
 
+    _zplug
+
     return 0
 }
 
@@ -81,18 +98,7 @@ function _python3(){
     esac
 }
 
-function _zplug() {
-    if [ ! -d ~/.zplug ]; then
-      curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
-    fi
-    if ! zsh -c "source ~/.zplug/init.zsh && zplug check"; then
-      zsh -c "source ~/.zplug/init.zsh && zplug install"
-    fi
-    ln -s -f ~/.zplug/repos/sorin-ionescu/prezto ~/.zprezto
-    ln -s -f ${DOTDIR}/zsh/prezto/modules/prompt/functions/prompt_paradigm_setup ~/.zprezto/modules/prompt/functions/prompt_paradigm_setup
-}
-
-function _neovim() {
+function neovim() {
     status "Install neovim"
     case ${os} in
         mac)
@@ -106,6 +112,7 @@ function _neovim() {
 
     status "Set up neovim packages"
     # install neovim python package
+    _python3
     pip3 install --upgrade neovim
     # install dein.vim
     curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > /tmp/installer.sh
@@ -126,7 +133,7 @@ function _neovim() {
     echo
 }
 
-function _tex() {
+function tex() {
     status "Set up tex"
     case ${os} in
         mac)
@@ -142,10 +149,9 @@ function _tex() {
     echo
 }
 
+status "os is ${os}"
 _pkg-manager
-_bash
-_zsh
-_python3
-_zplug
-_neovim
-_tex
+bash
+zsh
+neovim
+tex

@@ -11,21 +11,22 @@ $ sudo sh -c "./install.sh"
 * Ubuntu/Debian
 
 ## Feature
-* git
-* zsh
+* automatically install dependencies
+* bash dotfiles
+* zsh dotfiles
+  - zplug
   - prezto
   - original prompt theme
-* zplug
-* python3
-  - pip3
-* neovim
+* neovim dotfiles
+  - python3
+    - pip3
   - original setting
   - useful plugins
-* brew: only mac os
+* latex dotfiles
 
 ## Manually set up
 ### Mac
-1. set up homebrew
+1. set up homebrew for
     ```bash
     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     brew tap caskroom/cask
@@ -40,8 +41,7 @@ $ sudo sh -c "./install.sh"
     ln -s -f ${DOTDIR}/bash/bash_logout ~/.bash_logout
     ```
 
-3. set up zsh
-
+3. set up zsh dotfiles
     1. install zsh
 
         ```bash
@@ -64,37 +64,32 @@ $ sudo sh -c "./install.sh"
         ln -s -f ${DOTDIR}/zsh/zshrc ~/.zshrc
         ```
 
-4. set up zplug
+    4. set up zplug
+        1. install zplug
 
-    1. install zplug
+            ```bash
+            curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh| zsh
+            ```
 
-        ```bash
-        curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh| zsh
-        ```
+        2. install zplugins
+            ```bash
+            zplug install
+            ```
 
-    2. install zplugins
-        ```bash
-        zplug install
-        ```
+        3. link original zprezto prompt theme
+            ```bash
+            ln -s -f ~/.zplug/repos/sorin-ionescu/prezto ~/.zprezto
+            ln -s -f ${DOTDIR}/zsh/prezto/modules/prompt/functions/prompt_paradigm_setup ~/.zprezto/modules/prompt/functions/prompt_paradigm_setup
+            ```
 
-    3. link original zprezto prompt theme
-        ```bash
-        ln -s -f ~/.zplug/repos/sorin-ionescu/prezto ~/.zprezto
-        ln -s -f ${DOTDIR}/zsh/prezto/modules/prompt/functions/prompt_paradigm_setup ~/.zprezto/modules/prompt/functions/prompt_paradigm_setup
-        ```
-
-5. install python3
-    ```bash
-    brew install python3
-    ```
-
-6. setup neovim
+4. setup neovim
   1. install neovim
     ```bash
     brew install neovim
     ```
   2. install plugins
     ```bash
+    brew install python3
     pip3 install --upgrade neovim
     mkdir -p ~/.config
     curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > /tmp/installer.sh
@@ -105,7 +100,7 @@ $ sudo sh -c "./install.sh"
     ln -s -f ${DOTDIR}/nvim/ ~/.config/nvim
     ```
 
-7. set up latex
+5. set up latex
   1. install latex
     ```bash
     brew install ghostscript
