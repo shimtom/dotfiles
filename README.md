@@ -93,6 +93,27 @@ $ sudo sh -c "./install.sh"
     brew install neovim
     ```
 
+7. set up latex
+  1. install latex
+    ```bash
+    brew install ghostscript
+    brew cask install basictex
+    ```
+  2. set paper size
+    ```bash
+    sudo tlmgr paper a4
+    ```
+  3. install packages
+    ```bash
+    sudo tlmgr update --self --all
+    sudo tlmgr install collection-langjapanese latexmk
+    ```
+  4. link latexmkrc
+    ```bash
+    # ${DOTDIR}: dotfiles absolute path.
+    ln -s -f ${DOTDIR}/latexmkrc ~/.latexmkrc
+    ```
+
 ## TODO
 * [ ] add how to manually install in ubuntu/debian
 * [ ] add how to setup neovim dotfiles
