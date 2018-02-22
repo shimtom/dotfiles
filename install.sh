@@ -7,6 +7,10 @@ os=${info[0]}
 dist=${info[1]}
 bit=${info[2]}
 
+function status() {
+  echo -e "\033[0;34m==>\033[0;39m ${@}"
+}
+
 function _pkg-manager() {
     case ${os} in
         mac)
@@ -112,19 +116,21 @@ function _neovim() {
     pip3 install --upgrade neovim
 }
 
-# function _tex(parameter) {
-#     case ${os} in
-#         mac)
-#             brew install ghostscript
-#             brew cask install basictex
-#             sudo tlmgr update --self --all
-#             sudo tlmgr paper a4
-#             sudo tlmgr install collection-langjapanese
-#         linux)
-#             wget http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz -P /tmp/
-#             tar zxf /tmp/install-tl-unx.tar.gz
-#             cd /tmp/install-tl* && sudo ./install-tl
-# }
+function _tex() {
+    status "Set up tex"
+    case ${os} in
+        mac)
+            brew install ghostscript
+            brew cask install basictex
+            sudo tlmgr paper a4
+            sudo tlmgr update --self --all
+            sudo tlmgr install collection-langjapanese latexmk ;;
+        *)  echo "unsupported os(${os})"
+            return 1 ;;
+    esac
+    ln -s -f ${DOTDIR}/latexmkrc ~/.latexmkrc
+    echo
+}
 
 _pkg-manager
 _bash
@@ -132,5 +138,4 @@ _zsh
 _python3
 _zplug
 _neovim
-
-echo "finish set up"
+_tex
