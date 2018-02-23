@@ -122,6 +122,7 @@ $ sudo sh -c "./install.sh"
     ```
 
 ## TODO
+* [ ] consider BSD or GNU
 * [ ] add how to manually install in ubuntu/debian
 * [ ] add how to setup neovim dotfiles
 * [ ] latex
