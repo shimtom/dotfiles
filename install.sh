@@ -23,8 +23,9 @@ function _pkg-manager() {
             case ${dist} in
                 ubuntu | debian)
                     status "upgrade apt to install dependencies"
-                    sudo apt update && sudo apt upgrade -y
-                    sudo apt install -y software-properties-common
+                    sudo apt update
+                    sudo apt upgrade -y && sudo apt full-upgrade -y
+                    sudo apt autoremove && sudo apt clean
                     ;;
                 *)  echo "unsupported distribution(${dist})"
                     return 1 ;;
@@ -89,7 +90,7 @@ function _python3(){
         linux)
             case ${dist} in
                 ubuntu | debian)
-                    sudo apt install -y python-qt4 python3-dev python3-pip python3-setuptools python3-venv ;;
+                    sudo apt install -y python-qt4 python-dev python-pip python3-dev python3-pip python3-setuptools python3-venv ;;
                 *)  echo "unsupported distribution(${dist})"
                     return 1 ;;
             esac ;;
@@ -104,8 +105,15 @@ function neovim() {
         mac)
             brew install neovim ;;
         linux)
-            curl -LO https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage -o /usr/local/bin/nvim
-            chmod u+x /usr/loca/bin/nvim ;;
+            case ${dist} in
+                ubuntu)
+                    sudo add-apt-repository ppa:neovim-ppa/stable
+                    sudo apt update
+                    sudo apt install neovim ;;
+                *)
+                    curl -LO https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage -o /usr/local/bin/nvim
+                    chmod u+x /usr/loca/bin/nvim ;;
+            esac ;;
         *)  echo "unsupported os(${os})"
             return 1 ;;
     esac
@@ -116,7 +124,7 @@ function neovim() {
     pip3 install --upgrade neovim
     # install dein.vim
     curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > /tmp/installer.sh
-    mkdir -p ~/.cache
+    mkdir -p ~/.cache/dein
     sh /tmp/installer.sh ~/.cache/dein
     # link neovim dotfiles
     mkdir -p ~/.config/nvim/plugins
@@ -133,7 +141,7 @@ function neovim() {
     echo
 }
 
-function tex() {
+function _texlive() {
     status "Set up tex"
     case ${os} in
         mac)
@@ -142,11 +150,21 @@ function tex() {
             sudo tlmgr paper a4
             sudo tlmgr update --self --all
             sudo tlmgr install collection-langjapanese latexmk ;;
+        linux)
+            case ${dist} in
+                ubuntu | debian)
+                    sudo apt install -y texlive-full ;;
+                *)  echo "unsupported distribution(${dist})"
+                    return 1 ;;
+            esac ;;
         *)  echo "unsupported os(${os})"
             return 1 ;;
     esac
+}
+
+function latexmk() {
+    _texlive
     ln -s -f ${DOTDIR}/latexmkrc ~/.latexmkrc
-    echo
 }
 
 status "os is ${os}"
