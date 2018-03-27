@@ -11,65 +11,55 @@ function status() {
   echo -e "\033[0;34m==>\033[0;39m ${@}"
 }
 
-function _pkg-manager() {
+function error(){
+    status ${@}
+    exit 1
+}
+
+function setup_pkg_manager() {
     status "Set up package manager"
     case ${os} in
         mac)
             status "Install homebrew"
             /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
             brew tap caskroom/cask
-            brew update && brew upgrade
-            ;;
+            brew update && brew upgrade ;;
         linux)
             case ${dist} in
                 ubuntu | debian)
                     status "Upgrade apt"
                     sudo apt update
                     sudo apt upgrade -y && sudo apt full-upgrade -y
-                    sudo apt autoremove && sudo apt clean
-                    ;;
-                *)  status "Unsupported distribution(${dist})"
-                    return 1 ;;
+                    sudo apt autoremove && sudo apt clean ;;
+                *)  error "Unsupported distribution(${dist})" ;;
             esac ;;
-        *)  status "Unsupported os(${os})"
-            return 1 ;;
+        *)  error "Unsupported os(${os})" ;;
     esac
-
-    return 0
 }
 
-function preparation() {
+function setup_curl() {
     case ${os} in
+        mac) ;;
         linux)
             case ${dist} in
                 ubuntu | debian)
-                    sudo apt install -y curl
-                    ;;
+                    sudo apt update && sudo apt install -y curl ;;
+                *) error "Unsupported distribution(${dist})" ;;
             esac ;;
+        *) error "Unsupported os(${os})" ;;
     esac
 }
 
-function bash() {
+
+function setup_bash(){
     status "Link bash dotfiles"
     ln -s -f ${DOTDIR}/bash/bashrc ~/.bashrc
     ln -s -f ${DOTDIR}/bash/bash_profile ~/.bash_profile
     ln -s -f ${DOTDIR}/bash/bash_logout ~/.bash_logout
 }
 
-function _zplug() {
-    if [ ! -d ~/.zplug ]; then
-      curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
-    fi
-    if ! zsh -c "source ~/.zplug/init.zsh && zplug check"; then
-      zsh -c "source ~/.zplug/init.zsh && zplug install"
-    fi
-    ln -s -f ~/.zplug/repos/sorin-ionescu/prezto ~/.zprezto
-    ln -s -f ${DOTDIR}/zsh/prezto/modules/prompt/functions/prompt_paradigm_setup ~/.zprezto/modules/prompt/functions/prompt_paradigm_setup
-}
-
-function zsh(){
-    status "Set up zsh dotfiles"
-
+function setup_zsh(){
+    # Install zsh
     status "Install zsh"
     case ${os} in
         mac)
@@ -77,14 +67,13 @@ function zsh(){
         linux)
             case ${dist} in
                 ubuntu | debian)
-                    sudo apt install -y zsh ;;
-                *)  echo "unsupported distribution(${dist})"
-                    return 1 ;;
+                    sudo apt update && sudo apt install -y zsh ;;
+                *) error "Unsupported distribution(${dist})" ;;
             esac ;;
-        *)  echo "unsupported os(${os})"
-            return 1 ;;
+        *) error "Unsupported os(${os})" ;;
     esac
 
+    # Link zsh dotfiles
     status "Link zsh dotfiles"
     ln -s -f ${DOTDIR}/zsh/zlogin ~/.zlogin
     ln -s -f ${DOTDIR}/zsh/zlogout ~/.zlogout
@@ -92,30 +81,53 @@ function zsh(){
     ln -s -f ${DOTDIR}/zsh/zprofile ~/.zprofile
     ln -s -f ${DOTDIR}/zsh/zshenv ~/.zshenv
     ln -s -f ${DOTDIR}/zsh/zshrc ~/.zshrc
-
-    status "Install zplug"
-    _zplug
-
-    return 0
 }
 
-function _python3(){
+function setup_zplug() {
+    if type "zsh" > /dev/null 2>&1; then
+        setup_zsh
+    fi
+
+    # Install zplug command
+    status "Install zplug"
+    if [ ! -d ~/.zplug ]; then
+        if type "curl" > /dev/null 2>&1; then
+            setup_curl
+        fi
+        curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
+    fi
+
+    # Install zplug plugins in zshrc
+    if ! zsh -c "source ~/.zplug/init.zsh && zplug check"; then
+        status "Install zplug plugins"
+        zsh -c "source ~/.zplug/init.zsh && zplug install"
+    fi
+
+    # Link zplug plugins dotfiles
+    status "Link zplug dotfiles"
+
+    ln -s -f ~/.zplug/repos/sorin-ionescu/prezto ~/.zprezto
+    ln -s -f ${DOTDIR}/zsh/prezto/modules/prompt/functions/prompt_paradigm_setup ~/.zprezto/modules/prompt/functions/prompt_paradigm_setup
+}
+
+function setup_python3(){
+    status "Install python3"
     case ${os} in
         mac)
             brew install python3 ;;
         linux)
             case ${dist} in
                 ubuntu | debian)
-                    sudo apt install -y python-qt4 python-dev python-pip python3-dev python3-pip python3-setuptools python3-venv ;;
-                *)  status "unsupported distribution(${dist})"
-                    return 1 ;;
+                    sudo apt update && sudo apt install -y python3 python3-dev python3-pip python3-setuptools python3-venv ;;
+                    # install_pkg "python-qt4 python python-dev python-pip"
+                *) error "Unsupported distribution(${dist})" ;;
             esac ;;
-        *)  status "unsupported os(${os})"
-            return 1 ;;
+        *) error "Unsupported os(${os})" ;;
     esac
 }
 
-function neovim() {
+function setup_neovim() {
+    # Install neovim
     status "Install neovim"
     case ${os} in
         mac)
@@ -123,25 +135,26 @@ function neovim() {
         linux)
             case ${dist} in
                 ubuntu)
-                    sudo add-apt-repository ppa:neovim-ppa/stable
-                    sudo apt update
-                    sudo apt install neovim ;;
-                *)
-                    curl -LO https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage -o /usr/local/bin/nvim
-                    chmod u+x /usr/loca/bin/nvim ;;
+                    sudo apt update && sudo apt install -y software-properties-common
+                    sudo add-apt-repository -y ppa:neovim-ppa/stable
+                    sudo apt update && sudo apt install -y neovim ;;
+                *) error "Unsupported distribution(${dist})" ;;
             esac ;;
-        *)  echo "unsupported os(${os})"
-            return 1 ;;
+        *) error "Unsupported os(${os})" ;;
     esac
 
+    # set up neovim
     status "Set up neovim packages"
-    # install neovim python package
-    _python3
+    setup_python3
     pip3 install --upgrade neovim
     # install dein.vim
+    if type "curl" > /dev/null 2>&1; then
+        setup_curl
+    fi
     curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > /tmp/installer.sh
     mkdir -p ~/.cache/dein
     sh /tmp/installer.sh ~/.cache/dein
+
     # link neovim dotfiles
     status "Link neovim dotfiles"
     mkdir -p ~/.config/nvim/plugins
@@ -157,7 +170,7 @@ function neovim() {
     status "Neovim packages installed for the first startup"
 }
 
-function _texlive() {
+function setup_texlive() {
     case ${os} in
         mac)
             brew install ghostscript
@@ -169,31 +182,43 @@ function _texlive() {
             case ${dist} in
                 ubuntu | debian)
                     sudo apt install -y texlive-full ;;
-                *)  status "Unsupported distribution(${dist})"
-                    return 1 ;;
+                *) error "Unsupported distribution(${dist})" ;;
             esac ;;
-        *)  status "Unsupported os(${os})"
-            return 1 ;;
+        *) error "Unsupported os(${os})" ;;
     esac
+
 }
 
-function latexmk() {
+function setup_latexmk(){
+    setup_texlive
     status "Set up latexmk"
-    _texlive
     ln -s -f ${DOTDIR}/latexmkrc ~/.latexmkrc
 }
 
-function git() {
+function setup_git() {
+    status "Install git"
+    case ${os} in
+        mac)
+            brew install git ;;
+        linux)
+            case ${dist} in
+                ubuntu | debian)
+                    sudo apt update && sudo apt install -y git ;;
+                *) error "Unsupported distribution(${dist})" ;;
+            esac ;;
+        *) error "Unsupported os(${os})" ;;
+    esac
+
     status "Set up git"
     ln -s -f ${DOTDIR}/git/gitignore_global ~/.gitignore_global
     ln -s -f ${DOTDIR}/git/gitconfig ~/.gitconfig
 }
 
 status "OS is ${os}"
-_pkg-manager
-preparation
-bash
-zsh
-neovim
-tex
-git
+setup_pkg_manager
+setup_bash
+setup_zsh
+setup_git
+setup_zplug
+setup_neovim
+setup_latexmk
