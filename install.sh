@@ -3,9 +3,9 @@
 DOTDIR=$(cd $(dirname $0); pwd)
 
 declare -a info=($(${DOTDIR}/bin/get_os_info))
-os=${info[0]}
-dist=${info[1]}
-bit=${info[2]}
+OS_TYPE=${info[0]}
+DIST=${info[1]}
+BIT=${info[2]}
 
 function status() {
   echo -e "\033[0;34m==>\033[0;39m ${@}"
@@ -18,35 +18,35 @@ function error(){
 
 function setup_pkg_manager() {
     status "Set up package manager"
-    case ${os} in
+    case ${OS_TYPE} in
         mac)
             status "Install homebrew"
             /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
             brew tap caskroom/cask
             brew update && brew upgrade ;;
         linux)
-            case ${dist} in
+            case ${DIST} in
                 ubuntu | debian)
                     status "Upgrade apt"
                     sudo apt update
                     sudo apt upgrade -y && sudo apt full-upgrade -y
                     sudo apt autoremove && sudo apt clean ;;
-                *)  error "Unsupported distribution(${dist})" ;;
+                *)  error "Unsupported DISTribution(${DIST})" ;;
             esac ;;
-        *)  error "Unsupported os(${os})" ;;
+        *)  error "Unsupported os(${OS_TYPE})" ;;
     esac
 }
 
 function setup_curl() {
-    case ${os} in
+    case ${OS_TYPE} in
         mac) ;;
         linux)
-            case ${dist} in
+            case ${DIST} in
                 ubuntu | debian)
                     sudo apt update && sudo apt install -y curl ;;
-                *) error "Unsupported distribution(${dist})" ;;
+                *) error "Unsupported DISTribution(${DIST})" ;;
             esac ;;
-        *) error "Unsupported os(${os})" ;;
+        *) error "Unsupported os(${OS_TYPE})" ;;
     esac
 }
 
@@ -61,16 +61,16 @@ function setup_bash(){
 function setup_zsh(){
     # Install zsh
     status "Install zsh"
-    case ${os} in
+    case ${OS_TYPE} in
         mac)
             brew install zsh ;;
         linux)
-            case ${dist} in
+            case ${DIST} in
                 ubuntu | debian)
                     sudo apt update && sudo apt install -y zsh ;;
-                *) error "Unsupported distribution(${dist})" ;;
+                *) error "Unsupported DISTribution(${DIST})" ;;
             esac ;;
-        *) error "Unsupported os(${os})" ;;
+        *) error "Unsupported os(${OS_TYPE})" ;;
     esac
 
     # Link zsh dotfiles
@@ -112,35 +112,34 @@ function setup_zplug() {
 
 function setup_python3(){
     status "Install python3"
-    case ${os} in
+    case ${OS_TYPE} in
         mac)
             brew install python3 ;;
         linux)
-            case ${dist} in
+            case ${DIST} in
                 ubuntu | debian)
                     sudo apt update && sudo apt install -y python3 python3-dev python3-pip python3-setuptools python3-venv ;;
-                    # install_pkg "python-qt4 python python-dev python-pip"
-                *) error "Unsupported distribution(${dist})" ;;
+                *) error "Unsupported DISTribution(${DIST})" ;;
             esac ;;
-        *) error "Unsupported os(${os})" ;;
+        *) error "Unsupported os(${OS_TYPE})" ;;
     esac
 }
 
 function setup_neovim() {
     # Install neovim
     status "Install neovim"
-    case ${os} in
+    case ${OS_TYPE} in
         mac)
             brew install neovim ;;
         linux)
-            case ${dist} in
+            case ${DIST} in
                 ubuntu)
                     sudo apt update && sudo apt install -y software-properties-common
                     sudo add-apt-repository -y ppa:neovim-ppa/stable
                     sudo apt update && sudo apt install -y neovim ;;
-                *) error "Unsupported distribution(${dist})" ;;
+                *) error "Unsupported DISTribution(${DIST})" ;;
             esac ;;
-        *) error "Unsupported os(${os})" ;;
+        *) error "Unsupported os(${OS_TYPE})" ;;
     esac
 
     # set up neovim
@@ -171,7 +170,7 @@ function setup_neovim() {
 }
 
 function setup_texlive() {
-    case ${os} in
+    case ${OS_TYPE} in
         mac)
             brew install ghostscript
             brew cask install basictex
@@ -179,12 +178,12 @@ function setup_texlive() {
             sudo tlmgr update --self --all
             sudo tlmgr install collection-langjapanese latexmk ;;
         linux)
-            case ${dist} in
+            case ${DIST} in
                 ubuntu | debian)
                     sudo apt install -y texlive-full ;;
-                *) error "Unsupported distribution(${dist})" ;;
+                *) error "Unsupported DISTribution(${DIST})" ;;
             esac ;;
-        *) error "Unsupported os(${os})" ;;
+        *) error "Unsupported os(${OS_TYPE})" ;;
     esac
 
 }
@@ -197,16 +196,16 @@ function setup_latexmk(){
 
 function setup_git() {
     status "Install git"
-    case ${os} in
+    case ${OS_TYPE} in
         mac)
             brew install git ;;
         linux)
-            case ${dist} in
+            case ${DIST} in
                 ubuntu | debian)
                     sudo apt update && sudo apt install -y git ;;
-                *) error "Unsupported distribution(${dist})" ;;
+                *) error "Unsupported DISTribution(${DIST})" ;;
             esac ;;
-        *) error "Unsupported os(${os})" ;;
+        *) error "Unsupported os(${OS_TYPE})" ;;
     esac
 
     status "Set up git"
@@ -214,7 +213,7 @@ function setup_git() {
     ln -s -f ${DOTDIR}/git/gitconfig ~/.gitconfig
 }
 
-status "OS is ${os}"
+status "OS is ${OS_TYPE}"
 setup_pkg_manager
 setup_bash
 setup_zsh
