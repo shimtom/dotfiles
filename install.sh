@@ -152,6 +152,7 @@ function tex() {
 function git() {
     status "Set up git"
     ln -s -f ${DOTDIR}/git/gitignore_global ~/.gitignore_global
+    ln -s -f ${DOTDIR}/git/gitconfig ~/.gitconfig
 }
 
 status "os is ${os}"
@@ -160,3 +161,4 @@ bash
 zsh
 neovim
 tex
+git
