@@ -50,7 +50,6 @@ function setup_curl() {
     esac
 }
 
-
 function setup_bash(){
     status "Link bash dotfiles"
     ln -s -f ${DOTDIR}/bash/bashrc ~/.bashrc
@@ -191,7 +190,7 @@ function setup_texlive() {
 function setup_latexmk(){
     setup_texlive
     status "Set up latexmk"
-    ln -s -f ${DOTDIR}/latexmkrc ~/.latexmkrc
+    ln -s -f ${DOTDIR}/latexmk/latexmkrc ~/.latexmkrc
 }
 
 function setup_git() {
