@@ -12,9 +12,10 @@ function status() {
 }
 
 function _pkg-manager() {
+    status "Set up package manager"
     case ${os} in
         mac)
-            status "set up homebrew to install dependencies"
+            status "Install homebrew"
             /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
             brew tap caskroom/cask
             brew update && brew upgrade
@@ -22,23 +23,34 @@ function _pkg-manager() {
         linux)
             case ${dist} in
                 ubuntu | debian)
-                    status "upgrade apt to install dependencies"
+                    status "Upgrade apt"
                     sudo apt update
                     sudo apt upgrade -y && sudo apt full-upgrade -y
                     sudo apt autoremove && sudo apt clean
                     ;;
-                *)  echo "unsupported distribution(${dist})"
+                *)  status "Unsupported distribution(${dist})"
                     return 1 ;;
             esac ;;
-        *)  echo "unsupported os(${os})"
+        *)  status "Unsupported os(${os})"
             return 1 ;;
     esac
 
     return 0
 }
 
+function preparation() {
+    case ${os} in
+        linux)
+            case ${dist} in
+                ubuntu | debian)
+                    sudo apt install -y curl
+                    ;;
+            esac ;;
+    esac
+}
+
 function bash() {
-    status "set up bash dotfiles"
+    status "Link bash dotfiles"
     ln -s -f ${DOTDIR}/bash/bashrc ~/.bashrc
     ln -s -f ${DOTDIR}/bash/bash_profile ~/.bash_profile
     ln -s -f ${DOTDIR}/bash/bash_logout ~/.bash_logout
@@ -56,14 +68,16 @@ function _zplug() {
 }
 
 function zsh(){
+    status "Set up zsh dotfiles"
+
+    status "Install zsh"
     case ${os} in
-        status "set up zsh dotfiles"
         mac)
             brew install zsh ;;
         linux)
             case ${dist} in
                 ubuntu | debian)
-                    sudo apt install zsh ;;
+                    sudo apt install -y zsh ;;
                 *)  echo "unsupported distribution(${dist})"
                     return 1 ;;
             esac ;;
@@ -71,6 +85,7 @@ function zsh(){
             return 1 ;;
     esac
 
+    status "Link zsh dotfiles"
     ln -s -f ${DOTDIR}/zsh/zlogin ~/.zlogin
     ln -s -f ${DOTDIR}/zsh/zlogout ~/.zlogout
     ln -s -f ${DOTDIR}/zsh/zpreztorc ~/.zpreztorc
@@ -78,6 +93,7 @@ function zsh(){
     ln -s -f ${DOTDIR}/zsh/zshenv ~/.zshenv
     ln -s -f ${DOTDIR}/zsh/zshrc ~/.zshrc
 
+    status "Install zplug"
     _zplug
 
     return 0
@@ -91,10 +107,10 @@ function _python3(){
             case ${dist} in
                 ubuntu | debian)
                     sudo apt install -y python-qt4 python-dev python-pip python3-dev python3-pip python3-setuptools python3-venv ;;
-                *)  echo "unsupported distribution(${dist})"
+                *)  status "unsupported distribution(${dist})"
                     return 1 ;;
             esac ;;
-        *)  echo "unsupported os(${os})"
+        *)  status "unsupported os(${os})"
             return 1 ;;
     esac
 }
@@ -127,6 +143,7 @@ function neovim() {
     mkdir -p ~/.cache/dein
     sh /tmp/installer.sh ~/.cache/dein
     # link neovim dotfiles
+    status "Link neovim dotfiles"
     mkdir -p ~/.config/nvim/plugins
     ln -s -f ${DOTDIR}/nvim/init.vim ~/.config/nvim/init.vim
     ln -s -f ${DOTDIR}/nvim/editor.vim ~/.config/nvim/editor.vim
@@ -138,11 +155,9 @@ function neovim() {
     ln -s -f ${DOTDIR}/nvim/plugins/dein_python.toml ~/.config/nvim/plugins/dein_python.toml
 
     status "Neovim packages installed for the first startup"
-    echo
 }
 
 function _texlive() {
-    status "Set up tex"
     case ${os} in
         mac)
             brew install ghostscript
@@ -154,15 +169,16 @@ function _texlive() {
             case ${dist} in
                 ubuntu | debian)
                     sudo apt install -y texlive-full ;;
-                *)  echo "unsupported distribution(${dist})"
+                *)  status "Unsupported distribution(${dist})"
                     return 1 ;;
             esac ;;
-        *)  echo "unsupported os(${os})"
+        *)  status "Unsupported os(${os})"
             return 1 ;;
     esac
 }
 
 function latexmk() {
+    status "Set up latexmk"
     _texlive
     ln -s -f ${DOTDIR}/latexmkrc ~/.latexmkrc
 }
@@ -173,8 +189,9 @@ function git() {
     ln -s -f ${DOTDIR}/git/gitconfig ~/.gitconfig
 }
 
-status "os is ${os}"
+status "OS is ${os}"
 _pkg-manager
+preparation
 bash
 zsh
 neovim
