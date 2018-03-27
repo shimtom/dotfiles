@@ -307,3 +307,4 @@ $ ./install.sh
 ## TODO
 
 * [ ] consider BSD or GNU
+* [ ] add how to update
