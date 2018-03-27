@@ -3,7 +3,7 @@ Install my dotfiles and dependencies.
 
 ## Usage
 ```bash
-$ sudo sh -c "./install.sh"
+$ ./install.sh
 ```
 
 ## Supported OS
@@ -19,10 +19,11 @@ $ sudo sh -c "./install.sh"
   - original prompt theme
 * neovim dotfiles
   - python3
-    - pip3
   - original setting
   - useful plugins
-* latex dotfiles
+* latexmk dotfiles
+  - texlive
+* git dotfiles
 
 ## Manually set up
 ### Ubuntu
@@ -47,7 +48,7 @@ $ sudo sh -c "./install.sh"
     1. install zsh
         ```bash
         sudo apt update
-        sudo apt install zsh
+        sudo apt install -y zsh
         ```
 
     2. (option) set zsh default shell
@@ -71,7 +72,7 @@ $ sudo sh -c "./install.sh"
 
             ```bash
             sudo apt update
-            sudo apt install curl
+            sudo apt install -y curl
             curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh| zsh
             ```
 
