@@ -214,9 +214,9 @@ function setup_git() {
 
 status "OS is ${OS_TYPE}"
 setup_pkg_manager
+setup_git
 setup_bash
 setup_zsh
-setup_git
 setup_zplug
 setup_neovim
 setup_latexmk
