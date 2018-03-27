@@ -1,0 +1,25 @@
+[core]
+  editor = nvim
+  autocrlf = input
+  excludesfile = ~/.gitignore_global
+  # Make `git rebase` safer on macOS
+  # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
+  trustctime = false
+[color]
+  ui = true
+[color "branch"]
+  current = blue
+  remote = red
+[color "diff"]
+  commit = yellow
+  meta = yellow
+  frag = bold cyan
+  func = bold
+  whitespace = reverse red
+  old = red
+  new = green
+[color "status"]
+  added = bold
+  changed = yellow
+  untracked = green
+  branch = blue

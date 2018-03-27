@@ -149,6 +149,11 @@ function tex() {
     echo
 }
 
+function git() {
+    status "Set up git"
+    ln -s -f ${DOTDIR}/git/gitignore_global ~/.gitignore_global
+}
+
 status "os is ${os}"
 _pkg-manager
 bash
