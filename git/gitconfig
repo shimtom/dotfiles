@@ -5,6 +5,12 @@
   # Make `git rebase` safer on macOS
   # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
   trustctime = false
+[alias]
+  graph = log --graph --date-order --all --pretty=format:'%h %Cred%d %Cgreen%ad %Cblue%cn %Creset%s' --date=short
+[merge]
+  ff = false
+[pull]
+  ff = only
 [color]
   ui = true
 [color "branch"]
