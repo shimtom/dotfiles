@@ -209,7 +209,7 @@ function setup_git() {
 
     status "Set up git"
     ln -s -f ${DOTDIR}/git/gitignore_global ~/.gitignore_global
-    ln -s -f ${DOTDIR}/git/gitconfig ~/.gitconfig
+    cp -f ${DOTDIR}/git/gitconfig ~/.gitconfig
 }
 
 status "OS is ${OS_TYPE}"
