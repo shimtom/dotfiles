@@ -227,10 +227,13 @@ function setup_powerline() {
     # link powerline dotfiles
     status "Link powerline dotfiles"
     mkdir -p ~/.config/powerline
+    mkdir -p ~/.config/powerline/themes/shell
+    mkdir -p ~/.config/powerline/themes/tmux
+    mkdir -p ~/.config/powerline/colorschemes
     ln -s -f ${DOTDIR}/powerline/config.json ~/.config/powerline/config.json
     ln -s -f ${DOTDIR}/powerline/themes/shell/original.json ~/.config/powerline/themes/shell/original.json
     ln -s -f ${DOTDIR}/powerline/themes/tmux/original.json ~/.config/powerline/themes/tmux/original.json
-    ln -s -f ${DOTDIR}/powerline/colorscheme/default.json ~/.config/powerline/colorscheme/default.json
+    ln -s -f ${DOTDIR}/powerline/colorschemes/default.json ~/.config/powerline/colorschemes/default.json
 
 }
 

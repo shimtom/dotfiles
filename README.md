@@ -172,11 +172,14 @@ $ ./install.sh
 
         ```bash
         mkdir -p ~/.config/powerline
+        mkdir -p ~/.config/powerline/themes/shell
+        mkdir -p ~/.config/powerline/themes/tmux
+        mkdir -p ~/.config/powerline/colorscheme
         # ${DOTDIR}: dotfiles absolute path.
         ln -s -f ${DOTDIR}/powerline/config.json ~/.config/powerline/config.json
         ln -s -f ${DOTDIR}/powerline/themes/shell/original.json ~/.config/powerline/themes/shell/original.json
         ln -s -f ${DOTDIR}/powerline/themes/tmux/original.json ~/.config/powerline/themes/tmux/original.json
-        ln -s -f ${DOTDIR}/powerline/colorscheme/default.json ~/.config/powerline/colorscheme/default.json
+        ln -s -f ${DOTDIR}/powerline/colorschemes/default.json ~/.config/powerline/colorschemes/default.json
         ```
 
 7. set up tmux dotfile
@@ -329,11 +332,14 @@ $ ./install.sh
 
         ```bash
         mkdir -p ~/.config/powerline
+        mkdir -p ~/.config/powerline/themes/shell
+        mkdir -p ~/.config/powerline/themes/tmux
+        mkdir -p ~/.config/powerline/colorscheme
         # ${DOTDIR}: dotfiles absolute path.
         ln -s -f ${DOTDIR}/powerline/config.json ~/.config/powerline/config.json
         ln -s -f ${DOTDIR}/powerline/themes/shell/original.json ~/.config/powerline/themes/shell/original.json
         ln -s -f ${DOTDIR}/powerline/themes/tmux/original.json ~/.config/powerline/themes/tmux/original.json
-        ln -s -f ${DOTDIR}/powerline/colorscheme/default.json ~/.config/powerline/colorscheme/default.json
+        ln -s -f ${DOTDIR}/powerline/colorschemes/default.json ~/.config/powerline/colorschemes/default.json
         ```
 
 7. set up tmux dotfile
