@@ -10,8 +10,8 @@ $ ./install.sh
 
 ## Support OS
 
-* Mac
-* Ubuntu/Debian
+* [Ubuntu/Debian](#ubuntu)
+* [Mac](#mac)
 
 ## Feature
 
@@ -24,12 +24,16 @@ $ ./install.sh
   - python3
   - original setting
   - useful plugins
+* powerline config
+  - powerline
+  - powerline-segments
+  - original config
 * latexmk dotfiles
   - texlive
 
 ## Manually set up
 
-### Ubuntu
+### <a name="ubuntu">Ubuntu
 
 1. set up apt
 
@@ -145,7 +149,37 @@ $ ./install.sh
         ln -s -f ${DOTDIR}/nvim/plugins/dein_python.toml ~/.config/nvim/plugins/dein_python.toml
         ```
 
-6. set up latex dotfiles
+6. set up powerline dotfiles
+    1. install powerline
+
+        ```bash
+        sudo apt install -y python-dev python-pip
+        pip install --upgrade neovim
+        pip install powerline-status
+        pip install powerline-gitstatus
+        pip install powerline-exitstatus
+        ```
+
+    2. powerline font
+
+        ```bash
+        git clone https://github.com/powerline/fonts.git --depth=1 /tmp
+        /tmp/fonts/install.sh "Source Code Pro"
+        rm -rf /tmp/fonts
+        ```
+
+    3. link powerline config
+
+        ```bash
+        mkdir -p ~/.config/powerline
+        # ${DOTDIR}: dotfiles absolute path.
+        ln -s -f ${DOTDIR}/powerline/config.json ~/.config/powerline/config.json
+        ln -s -f ${DOTDIR}/powerline/themes/shell/original.json ~/.config/powerline/themes/shell/original.json
+        ln -s -f ${DOTDIR}/powerline/themes/tmux/original.json ~/.config/powerline/themes/tmux/original.json
+        ln -s -f ${DOTDIR}/powerline/colorscheme/default.json ~/.config/powerline/colorscheme/default.json
+        ```
+
+7. set up latex dotfiles
 
     1. install latex
 
@@ -160,7 +194,7 @@ $ ./install.sh
         ln -s -f ${DOTDIR}/latexmkrc ~/.latexmkrc
         ```
 
-### Mac
+### <a name="mac">Mac
 
 1. set up homebrew for
 
@@ -259,7 +293,37 @@ $ ./install.sh
         ln -s -f ${DOTDIR}/nvim/ ~/.config/nvim
         ```
 
-6. set up latex
+6. set up powerline dotfiles
+    1. install powerline
+
+        ```bash
+        brew install python
+        pip install --upgrade neovim
+        pip install powerline-status
+        pip install powerline-gitstatus
+        pip install powerline-exitstatus
+        ```
+
+    2. powerline font
+
+        ```bash
+        git clone https://github.com/powerline/fonts.git --depth=1 /tmp
+        /tmp/fonts/install.sh "Source Code Pro"
+        rm -rf /tmp/fonts
+        ```
+
+    3. link powerline config
+
+        ```bash
+        mkdir -p ~/.config/powerline
+        # ${DOTDIR}: dotfiles absolute path.
+        ln -s -f ${DOTDIR}/powerline/config.json ~/.config/powerline/config.json
+        ln -s -f ${DOTDIR}/powerline/themes/shell/original.json ~/.config/powerline/themes/shell/original.json
+        ln -s -f ${DOTDIR}/powerline/themes/tmux/original.json ~/.config/powerline/themes/tmux/original.json
+        ln -s -f ${DOTDIR}/powerline/colorscheme/default.json ~/.config/powerline/colorscheme/default.json
+        ```
+
+7. set up latex
 
     1. install latex
 
