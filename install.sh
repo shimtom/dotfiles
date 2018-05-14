@@ -102,15 +102,18 @@ function setup_zplug() {
     fi
 }
 
-function setup_python3(){
-    status "Install python3"
+function setup_python(){
+    status "Install python"
     case ${OS_TYPE} in
         mac)
+            brew install python
             brew install python3 ;;
         linux)
             case ${DIST} in
                 ubuntu | debian)
-                    sudo apt update && sudo apt install -y python3 python3-dev python3-pip python3-setuptools python3-venv ;;
+                    sudo apt update
+                    sudo apt install -y python python-dev python-pip python-setuptools python-venv
+                    sudo apt install -y python3 python3-dev python3-pip python3-setuptools python3-venv ;;
                 *) error "Unsupported DISTribution(${DIST})" ;;
             esac ;;
         *) error "Unsupported os(${OS_TYPE})" ;;
@@ -136,7 +139,6 @@ function setup_neovim() {
 
     # set up neovim
     status "Set up neovim packages"
-    setup_python3
     pip3 install --upgrade neovim
     # install dein.vim
     if type "curl" > /dev/null 2>&1; then
@@ -205,11 +207,40 @@ function setup_git() {
     cp -f ${DOTDIR}/git/gitconfig ~/.gitconfig
 }
 
+function setup_powerline() {
+    # Install powerline
+    status "Install powerline"
+    case ${OS_TYPE} in
+        mac|linux)
+            pip install powerline-status
+            pip install powerline-gitstatus
+            pip install powerline-exitstatus ;;
+        *) error "Unsupported os(${OS_TYPE})" ;;
+    esac
+
+    # Install powerline font
+    status "Install powerline font"
+    git clone https://github.com/powerline/fonts.git --depth=1 /tmp
+    /tmp/fonts/install.sh "Source Code Pro"
+    rm -rf /tmp/fonts
+
+    # link powerline dotfiles
+    status "Link powerline dotfiles"
+    mkdir -p ~/.config/powerline
+    ln -s -f ${DOTDIR}/powerline/config.json ~/.config/powerline/config.json
+    ln -s -f ${DOTDIR}/powerline/themes/shell/original.json ~/.config/powerline/themes/shell/original.json
+    ln -s -f ${DOTDIR}/powerline/themes/tmux/original.json ~/.config/powerline/themes/tmux/original.json
+    ln -s -f ${DOTDIR}/powerline/colorscheme/default.json ~/.config/powerline/colorscheme/default.json
+
+}
+
 status "OS is ${OS_TYPE}"
 setup_pkg_manager
 setup_git
 setup_bash
 setup_zsh
 setup_zplug
+setup_python
 setup_neovim
 setup_latexmk
+setup_powerline
