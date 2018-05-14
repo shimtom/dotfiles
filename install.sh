@@ -234,6 +234,20 @@ function setup_powerline() {
 
 }
 
+function setup_tmux() {
+    status "Install tmux"
+    case ${OS_TYPE} in
+        mac)
+            brew install reattach-to-user-namespace
+            brew install tmux ;;
+        linux)
+            apt update && apt install -y tmux ;;
+        *) error "Unsupported os(${OS_TYPE})" ;;
+    esac
+
+    ln -s -f ${DOTDIR}/tmux/tmux.conf ~/.tmux.conf
+}
+
 status "OS is ${OS_TYPE}"
 setup_pkg_manager
 setup_git

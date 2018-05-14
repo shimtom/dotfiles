@@ -179,7 +179,20 @@ $ ./install.sh
         ln -s -f ${DOTDIR}/powerline/colorscheme/default.json ~/.config/powerline/colorscheme/default.json
         ```
 
-7. set up latex dotfiles
+7. set up tmux dotfile
+    1. install tmux
+
+        ```bash
+        apt update && apt install -y tmux
+        ```
+    2. link tmux dotfile
+
+        ```bash
+        # ${DOTDIR}: dotfiles absolute path.
+        ln -s -f ${DOTDIR}/tmux/tmux.conf ~/.tmux.conf
+        ```
+
+8. set up latex dotfiles
 
     1. install latex
 
@@ -321,6 +334,21 @@ $ ./install.sh
         ln -s -f ${DOTDIR}/powerline/themes/shell/original.json ~/.config/powerline/themes/shell/original.json
         ln -s -f ${DOTDIR}/powerline/themes/tmux/original.json ~/.config/powerline/themes/tmux/original.json
         ln -s -f ${DOTDIR}/powerline/colorscheme/default.json ~/.config/powerline/colorscheme/default.json
+        ```
+
+7. set up tmux dotfile
+    1. install tmux
+
+        ```bash
+        brew install reattach-to-user-namespace
+        brew install tmux ;;
+        ```
+
+    2. link tmux dotfile
+
+        ```bash
+        # ${DOTDIR}: dotfiles absolute path.
+        ln -s -f ${DOTDIR}/tmux/tmux.conf ~/.tmux.conf
         ```
 
 7. set up latex
