@@ -20,8 +20,6 @@ $ ./install.sh
 * bash dotfiles
 * zsh dotfiles
   - zplug
-  - prezto
-  - original prompt theme
 * neovim dotfiles
   - python3
   - original setting
@@ -109,13 +107,6 @@ $ ./install.sh
 
             ```bash
             zsh -c "source ~/.zplug/init.zsh && zplug check"
-            ```
-
-        3. link original zprezto prompt theme
-
-            ```bash
-            ln -s -f ~/.zplug/repos/sorin-ionescu/prezto ~/.zprezto
-            ln -s -f ${DOTDIR}/zsh/prezto/modules/prompt/functions/prompt_paradigm_setup ~/.zprezto/modules/prompt/functions/prompt_paradigm_setup
             ```
 
 5. set up neovim dotfiles
@@ -242,13 +233,6 @@ $ ./install.sh
 
             ```bash
             zplug install
-            ```
-
-        3. link original zprezto prompt theme
-
-            ```bash
-            ln -s -f ~/.zplug/repos/sorin-ionescu/prezto ~/.zprezto
-            ln -s -f ${DOTDIR}/zsh/prezto/modules/prompt/functions/prompt_paradigm_setup ~/.zprezto/modules/prompt/functions/prompt_paradigm_setup
             ```
 
 5. setup neovim

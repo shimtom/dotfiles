@@ -76,7 +76,6 @@ function setup_zsh(){
     status "Link zsh dotfiles"
     ln -s -f ${DOTDIR}/zsh/zlogin ~/.zlogin
     ln -s -f ${DOTDIR}/zsh/zlogout ~/.zlogout
-    ln -s -f ${DOTDIR}/zsh/zpreztorc ~/.zpreztorc
     ln -s -f ${DOTDIR}/zsh/zprofile ~/.zprofile
     ln -s -f ${DOTDIR}/zsh/zshenv ~/.zshenv
     ln -s -f ${DOTDIR}/zsh/zshrc ~/.zshrc
@@ -101,12 +100,6 @@ function setup_zplug() {
         status "Install zplug plugins"
         zsh -c "source ~/.zplug/init.zsh && zplug install"
     fi
-
-    # Link zplug plugins dotfiles
-    status "Link zplug dotfiles"
-
-    ln -s -f ~/.zplug/repos/sorin-ionescu/prezto ~/.zprezto
-    ln -s -f ${DOTDIR}/zsh/prezto/modules/prompt/functions/prompt_paradigm_setup ~/.zprezto/modules/prompt/functions/prompt_paradigm_setup
 }
 
 function setup_python3(){
