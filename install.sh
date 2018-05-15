@@ -220,9 +220,10 @@ function setup_powerline() {
 
     # Install powerline font
     status "Install powerline font"
-    git clone https://github.com/powerline/fonts.git --depth=1 /tmp
+    git clone https://github.com/powerline/fonts.git --depth=1 /tmp/fonts
     /tmp/fonts/install.sh "Source Code Pro"
-    rm -rf /tmp/fonts
+    rm -rf /tmp/fonts/
+    status "set powerline font!"
 
     # link powerline dotfiles
     status "Link powerline dotfiles"
@@ -252,12 +253,13 @@ function setup_tmux() {
 }
 
 status "OS is ${OS_TYPE}"
-setup_pkg_manager
-setup_git
-setup_bash
-setup_zsh
-setup_zplug
-setup_python
-setup_neovim
-setup_latexmk
+# setup_pkg_manager
+# setup_git
+# setup_bash
+# setup_zsh
+# setup_zplug
+# setup_python
+# setup_neovim
+# setup_latexmk
 setup_powerline
+setup_tmux
