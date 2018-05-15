@@ -253,13 +253,13 @@ function setup_tmux() {
 }
 
 status "OS is ${OS_TYPE}"
-# setup_pkg_manager
-# setup_git
-# setup_bash
-# setup_zsh
-# setup_zplug
-# setup_python
-# setup_neovim
-# setup_latexmk
+setup_pkg_manager
+setup_git
+setup_bash
+setup_zsh
+setup_zplug
+setup_python
+setup_neovim
+setup_latexmk
 setup_powerline
 setup_tmux
