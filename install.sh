@@ -214,7 +214,8 @@ function setup_powerline() {
         mac|linux)
             pip install powerline-status
             pip install powerline-gitstatus
-            pip install powerline-exitstatus ;;
+            pip install powerline-exitstatus
+            pip install psutil ;;
         *) error "Unsupported os(${OS_TYPE})" ;;
     esac
 
