@@ -5,7 +5,6 @@ hook_add = '''
     let python_highlight_all = 1
 '''
 
-
 [[plugins]]
 repo = 'zchee/deoplete-jedi'
 depends = ['deoplete.nvim']

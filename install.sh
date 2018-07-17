@@ -106,8 +106,7 @@ function setup_python(){
     status "Install python"
     case ${OS_TYPE} in
         mac)
-            brew install python
-            brew install python3 ;;
+            brew install python ;;
         linux)
             case ${DIST} in
                 ubuntu | debian)
@@ -253,6 +252,18 @@ function setup_tmux() {
     ln -s -f ${DOTDIR}/tmux/tmux.conf ~/.tmux.conf
 }
 
+function setup_anyenv() {
+    status "Install anyenv"
+    git clone https://github.com/riywo/anyenv ~/.anyenv
+    mkdir -p ~/.anyenv/plugins
+    git clone https://github.com/znz/anyenv-update.git ~/.anyenv/plugins/anyenv-update
+    exec $SHELL -l
+    anyenv install pyenv 
+    exec $SHELL -l
+    pyenv install 3.6.6
+
+}
+
 status "OS is ${OS_TYPE}"
 setup_pkg_manager
 setup_git
@@ -264,3 +275,4 @@ setup_neovim
 setup_latexmk
 setup_powerline
 setup_tmux
+setup_anyenv

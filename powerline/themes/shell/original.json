@@ -9,44 +9,44 @@
             }
         }
     },
-	"segments": {
-		"left": [
+    "segments": {
+        "left": [
             {
                 "function": "powerline_exitstatus.exit_status"
             },
-			{
-				"function": "powerline.segments.shell.mode"
-			},
-			{
-				"function": "powerline.segments.common.net.hostname",
-				"priority": 10
-			},
-			{
-				"function": "powerline.segments.common.env.virtualenv",
-				"priority": 50
-			},
-			{
-				"function": "powerline.segments.shell.cwd",
+            {
+                "function": "powerline.segments.shell.mode"
+            },
+            {
+                "function": "powerline.segments.common.net.hostname",
+                "priority": 10
+            },
+            {
+                "function": "powerline.segments.common.env.virtualenv",
+                "priority": 50
+            },
+            {
+                "function": "powerline.segments.shell.cwd",
                 "args": {
                     "dir_shorten_len": 1,
                     "dir_limit_depth": null
                 },
-				"priority": 10
-			},
-			{
-				"function": "powerline.segments.shell.jobnum",
-				"priority": 20
-			}
-		],
-		"right": [
+                "priority": 10
+            },
+            {
+                "function": "powerline.segments.shell.jobnum",
+                "priority": 20
+            }
+        ],
+        "right": [
             {
                 "function": "powerline_gitstatus.gitstatus",
                 "priority": 50
             },
-			{
-				"function": "powerline.segments.common.vcs.stash",
-				"priority": 50
-			}
-		]
-	}
+            {
+                "function": "powerline.segments.common.vcs.stash",
+                "priority": 50
+            }
+        ]
+    }
 }
