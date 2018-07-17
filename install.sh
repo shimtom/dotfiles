@@ -1,5 +1,7 @@
 #!/bin/bash -eu
 
+keyword=${1}
+
 DOTDIR=$(cd $(dirname $0); pwd)
 
 declare -a info=($(${DOTDIR}/bin/get_os_info))
@@ -20,10 +22,12 @@ function setup_pkg_manager() {
     status "Set up package manager"
     case ${OS_TYPE} in
         mac)
-            status "Install homebrew"
-            /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-            brew tap caskroom/cask
-            brew update && brew upgrade ;;
+            if ! type "brew" > /dev/null 2>&1; then
+                status "Install homebrew"
+                /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+                brew tap caskroom/cask
+                brew update && brew upgrade
+            fi ;;
         linux)
             case ${DIST} in
                 ubuntu | debian)
@@ -38,6 +42,10 @@ function setup_pkg_manager() {
 }
 
 function setup_curl() {
+    if type "curl" > /dev/null 2>&1; then
+        return
+    fi
+
     case ${OS_TYPE} in
         mac) ;;
         linux)
@@ -120,6 +128,9 @@ function setup_python(){
 }
 
 function setup_neovim() {
+    if type "neovim" > /dev/null 2>&1; then
+        return
+    fi
     # Install neovim
     status "Install neovim"
     case ${OS_TYPE} in
