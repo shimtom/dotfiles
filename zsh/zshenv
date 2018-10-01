@@ -9,27 +9,3 @@
 if [[ "$SHLVL" -eq 1 && ! -o LOGIN && -s "${ZDOTDIR:-$HOME}/.zprofile" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprofile"
 fi
-
-# Garbled
-case $TERM in
-    linux) export LANG=C ;;
-    *)     export LANG=ja_JP.UTF-8 ;;
-esac
-
-## Golang
-export GOPATH=$HOME/go
-export PATH=$PATH:$GOPATH/bin
-
-## Neovim
-export XDG_CONFIG_HOME="$HOME/.config"
-
-# anyenv
-if [ -d $HOME/.anyenv ] ; then
-    export PATH="$HOME/.anyenv/bin:$PATH"
-    eval "$(anyenv init -)"
-    # tmux対応
-    for D in `\ls $HOME/.anyenv/envs`
-    do
-        export PATH="$HOME/.anyenv/envs/$D/shims:$PATH"
-    done
-fi

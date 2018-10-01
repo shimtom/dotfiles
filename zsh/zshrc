@@ -2,6 +2,34 @@
 # Executes commands at the start of an interactive session.
 #
 
+# Garbled
+case $TERM in
+  linux) export LANG=C ;;
+  *)     export LANG=ja_JP.UTF-8 ;;
+esac
+
+
+## Golang
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+
+
+## Neovim
+export XDG_CONFIG_HOME="$HOME/.config"
+
+
+# anyenv
+if [ -d $HOME/.anyenv ] ; then
+  export PATH="$HOME/.anyenv/bin:$PATH"
+  eval "$(anyenv init -)"
+  # tmux対応
+  for D in `\ls $HOME/.anyenv/envs`
+  do
+    export PATH="$HOME/.anyenv/envs/$D/shims:$PATH"
+  done
+fi
+
+
 ## alias
 if type "pip" > /dev/null 2>&1; then
   alias pip-upgrade='pip freeze --local | grep -v "^\-e" | cut -d = -f 1 | xargs pip install -U'
@@ -61,16 +89,16 @@ if type "zplug" > /dev/null 2>&1; then
 
   ## zsh-autosuggestions
   if zplug check "zsh-users/zsh-autosuggestions"; then
-      export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=242'
+    export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=242'
   fi
 
   ## anyframe
   if zplug check "mollifier/anyframe"; then
-      bindkey '^r' anyframe-widget-put-history
+    bindkey '^r' anyframe-widget-put-history
   fi
   ## enhanced
   if zplug check "b4b4r07/enhancd"; then
-      export ENHANCD_DISABLE_DOT=1
-      export ENHANCD_DISABLE_HOME=1
+    export ENHANCD_DISABLE_DOT=1
+    export ENHANCD_DISABLE_HOME=1
   fi
 fi
