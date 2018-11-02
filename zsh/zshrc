@@ -2,23 +2,23 @@
 # Executes commands at the start of an interactive session.
 #
 
-# Garbled
+## Garbled
 case $TERM in
   linux) export LANG=C ;;
   *)     export LANG=ja_JP.UTF-8 ;;
 esac
 
+## Locale
+export LC_ALL=en_US.UTF-8
 
 ## Golang
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
 
-
 ## Neovim
 export XDG_CONFIG_HOME="$HOME/.config"
 
-
-# anyenv
+## anyenv
 if [ -d $HOME/.anyenv ] ; then
   export PATH="$HOME/.anyenv/bin:$PATH"
   eval "$(anyenv init -)"
@@ -28,7 +28,6 @@ if [ -d $HOME/.anyenv ] ; then
     export PATH="$HOME/.anyenv/envs/$D/shims:$PATH"
   done
 fi
-
 
 ## alias
 if type "pip" > /dev/null 2>&1; then
@@ -43,17 +42,16 @@ if type "brew" > /dev/null 2>&1; then
   brew-cask-upgrade(){ for app in $(brew cask list); do local latest="$(brew cask info "${app}" | awk 'NR==1{print $2}')"; local versions=($(ls -1 "/usr/local/Caskroom/${app}/.metadata/")); local current=$(echo ${versions} | awk '{print $NF}'); if [[ "${latest}" = "latest" ]]; then echo "[!] ${app}: ${current} == ${latest}"; [[ "$1" = "-f" ]] && brew cask install "${app}" --force; continue; elif [[ "${current}" = "${latest}" ]]; then continue; fi; echo "[+] ${app}: ${current} -> ${latest}"; brew cask uninstall "${app}" --force; brew cask install "${app}"; done; }
 fi
 
-
 ## launch powerline
-. /usr/local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
+. /Users/Tomoshige/.anyenv/envs/pyenv/versions/3.6.6/lib/python3.6/site-packages/powerline/bindings/zsh/powerline.zsh
 
-# launch tmux
+## launch tmux
 if [[ -z "$TMUX" ]]; then
   tmux new-session;
   exit;
 fi
 
-# zplug
+## zplug
 if [ -f ~/.zplug/init.zsh ]; then
   source ~/.zplug/init.zsh
 fi
