@@ -17,12 +17,6 @@ else
     OS_TYPE="unkown"
 fi
 
-
-if [ -f /usr/bin/zsh ]; then
-    exec /usr/bin/zsh
-fi
-
-
 if type "shopt" > /dev/null 2>&1; then
     if ! shopt -oq posix; then
         if [ -f /usr/share/bash-completion/bash_completion ]; then
@@ -62,7 +56,7 @@ if [ -d $HOME/.anyenv ] ; then
 fi
 
 
-# prompt
+## prompt
 export PS1='\[\e[1;37m\]\w\[\e[00m\]$ '
 
 
