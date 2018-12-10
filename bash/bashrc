@@ -35,7 +35,7 @@ case $TERM in
 esac
 
 ## Locale
-export LC_ALL=
+# export LC_ALL=
 
 
 ## Golang
