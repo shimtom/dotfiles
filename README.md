@@ -231,9 +231,29 @@ $ ./install.sh
     2. link dotfiles
 
         ```bash
-        # ${DOTDIR}: dotfiles absolute path.        
+        # ${DOTDIR}: dotfiles absolute path.
         ln -s -f ${DOTDIR}/git/gitignore_global ~/.gitignore_global
         ln -s -f ${DOTDIR}/git/gitconfig ~/.gitconfig
+        ```
+3. set up fish
+
+    1. install fish
+
+        ```bash
+        brew install fish
+        ```
+
+    2. install fisher
+
+        ```bash
+        curl https://git.io/fisher --create-dirs -sLo ~/.config/fish/functions/fisher.fish
+        ```
+
+    3. install plugins
+
+        ```
+        fisher add jethrokuan/z
+        fisher add plugin-peco
         ```
 
 3. set up bash dotfiles
