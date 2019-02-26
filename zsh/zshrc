@@ -43,7 +43,7 @@ if type "brew" > /dev/null 2>&1; then
 fi
 
 ## launch powerline
-. /Users/Tomoshige/.anyenv/envs/pyenv/versions/3.6.6/lib/python3.6/site-packages/powerline/bindings/zsh/powerline.zsh
+#. /Users/Tomoshige/.anyenv/envs/pyenv/versions/3.6.6/lib/python3.6/site-packages/powerline/bindings/zsh/powerline.zsh
 
 ## launch tmux
 if [[ -z "$TMUX" ]]; then
