@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 from __future__ import absolute_import, division, print_function
 
+import getpass
 import os
 import platform
 import shlex
 import shutil
+import stat
 import subprocess
 import sys
-import getpass
 
 DOTDIR = os.path.dirname(os.path.abspath(__file__))
 COMPLETED = []
@@ -92,6 +93,46 @@ def git(passwd):
     _copy(os.path.join(DOTDIR, 'git/gitconfig'), os.path.expanduser('~/.gitconfig'))
 
 
+@depend('pkg')
+@application('peco')
+def peco(_):
+    if platform.system() == 'Darwin':
+        subprocess.check_call(shlex.split('brew install peoc'))
+    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
+        subprocess.check_call(
+            shlex.split(
+                'wget -O - https://github.com/peco/peco/releases/download/v0.5.3/peco_linux_amd64.tar.gz | tar zxvf -'
+            )
+        )
+        shutil.move('peco_linux_amd64/peco', '/usr/local/bin/')
+        os.chmod('/usr/local/bin/peco', stat.S_IXOTH)
+        shutil.rmtree('peco_linux_amd64')
+
+
+@depend('pkg')
+@application('imagemagick')
+def imagemagick(passwd):
+    if platform.system() == 'Darwin':
+        subprocess.check_call(shlex.split('brew install imagemagick'))
+    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
+        subprocess.check_call(shlex.split('sudo -S apt update'), input=passwd)
+        subprocess.check_call(
+            shlex.split('sudo -S apt install -y imagemagick'), input=passwd
+        )
+
+
+@depend('pkg')
+@application('ffmpeg')
+def ffmpeg(passwd):
+    if platform.system() == 'Darwin':
+        subprocess.check_call(shlex.split('brew install ffmpeg'))
+    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
+        subprocess.check_call(shlex.split('sudo -S apt update'), input=passwd)
+        subprocess.check_call(
+            shlex.split('sudo -S apt install -y ffmpeg'), input=passwd
+        )
+
+
 @application('bash')
 def bash(_):
     _symlink(os.path.join(DOTDIR, 'bash/bashrc'), os.path.expanduser('~/.bashrc'))
@@ -103,7 +144,7 @@ def bash(_):
     )
 
 
-@depend('pkg')
+@depend('pkg', 'peco')
 @application('zsh')
 def zsh(passwd):
     if platform.system() == 'Darwin':
@@ -133,7 +174,7 @@ def zsh(passwd):
     )
 
 
-@depend('pkg')
+@depend('pkg', 'peco')
 @application('fish')
 def fish(passwd):
     if platform.system() == 'Darwin':
@@ -290,7 +331,21 @@ def powerline(passwd):
 
 def main():
     args = sys.argv[1:]
-    choices = ['pkg', 'bash', 'zsh', 'fish', 'git', 'latex', 'vim', 'anyenv']
+    choices = [
+        'pkg',
+        'peco',
+        'imagemagick',
+        'ffmpeg',
+        'bash',
+        'zsh',
+        'fish',
+        'tmux',
+        'git',
+        'anyenv',
+        'python',
+        'vim',
+        'latex',
+    ]
 
     # help
     if '-h' in args or '--help' in args:

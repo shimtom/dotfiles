@@ -14,22 +14,30 @@ $ ./install.sh
 * [Mac](#mac)
 
 ## Feature
-
-* automatically install dependencies
-* git dotfiles
-* bash dotfiles
-* zsh dotfiles
-  - zplug
-* neovim dotfiles
-  - python3
-  - original setting
-  - useful plugins
-* powerline config
-  - powerline
-  - powerline-segments
-  - original config
-* latexmk dotfiles
-  - texlive
+* package manager
+    - brew (mac only)
+    - apt (ubuntu only)
+* peco
+* imagemagick
+* ffmpeg
+* bash
+* zsh
+    - zplug
+* fish
+    - fisher
+* tmux
+* git
+* anyenv
+* python
+    - pyenv
+    - packages
+* vim
+    - neovim
+    - dein.vim
+* latex
+    - texlive
+    - latexmk
+    - packages
 
 ## Manually set up
 
