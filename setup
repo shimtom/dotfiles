@@ -144,7 +144,7 @@ def bash(_):
     )
 
 
-@depend('pkg', 'peco')
+@depend('pkg', 'peco', 'anyenv')
 @application('zsh')
 def zsh(passwd):
     if platform.system() == 'Darwin':
@@ -174,7 +174,7 @@ def zsh(passwd):
     )
 
 
-@depend('pkg', 'peco')
+@depend('pkg', 'peco', 'anyenv')
 @application('fish')
 def fish(passwd):
     if platform.system() == 'Darwin':
@@ -191,6 +191,7 @@ def fish(passwd):
     )
     subprocess.check_call(shlex.split('fisher add jethrokuan/z'))
     subprocess.check_call(shlex.split('fisher add plugin-peco'))
+    subprocess.check_call(shlex.split('fisher add oh-my-fish/theme-bobthefish'))
     _symlink(
         os.path.join(DOTDIR, 'fish/config.fish'),
         os.path.expanduser('~/.config/fish/config.fish'),
@@ -220,6 +221,13 @@ def anyenv(_):
                 f"git clone https://github.com/anyenv/anyenv {os.path.expanduser('~/.anyenv')}"
             )
         )
+    if not os.path.isdir(os.path.expanduser('~/.anyenv/plugins')):
+        os.makedirs(os.path.expanduser('~/.anyenv/plugins'))
+    subprocess.check_call(
+        shlex.split(
+            f"git clone https://github.com/znz/anyenv-update.git {os.path.expanduser('~/.anyenv/plugins/anyenv-update')}"
+        )
+    )
 
 
 @depend('anyenv')
