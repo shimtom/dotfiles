@@ -190,7 +190,7 @@ def fish(passwd):
         )
     )
     subprocess.check_call(shlex.split('fisher add jethrokuan/z'))
-    subprocess.check_call(shlex.split('fisher add plugin-peco'))
+    subprocess.check_call(shlex.split('fisher add oh-my-fish/plugin-peco'))
     subprocess.check_call(shlex.split('fisher add oh-my-fish/theme-bobthefish'))
     _symlink(
         os.path.join(DOTDIR, 'fish/config.fish'),
