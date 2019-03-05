@@ -26,7 +26,7 @@ def _symlink(src, dst, target_is_directory=False):
     elif (target_is_directory and os.path.isdir(dst)) or (
         not target_is_directory and os.path.isfile(dst)
     ):
-        raise FileExistsError(f'{dst} already exists.')
+        raise FileExistsError('{dst} already exists.'.format(dst=dst))
 
     os.symlink(src, dst, target_is_directory)
 
@@ -36,7 +36,7 @@ def application(name):
         def _setup(*args, **kwargs):
             if name in COMPLETED:
                 return
-            print(f"\033[0;34m===>\033[0;39m set up '{name}'")
+            print("\033[0;34m===>\033[0;39m set up '{name}'".format(name=name))
             func(*args, **kwargs)
             COMPLETED.append(name)
 
@@ -186,7 +186,9 @@ def fish(passwd):
 
     subprocess.check_call(
         shlex.split(
-            f"curl https://git.io/fisher --create-dirs -sLo {os.path.expanduser('~/.config/fish/functions/fisher.fish')}"
+            'curl https://git.io/fisher --create-dirs -sLo {fisher_path}'.format(
+                fisher_path=os.path.expanduser('~/.config/fish/functions/fisher.fish')
+            )
         )
     )
     subprocess.check_call(shlex.split('fisher add jethrokuan/z'))
@@ -218,14 +220,18 @@ def anyenv(_):
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
         subprocess.check_call(
             shlex.split(
-                f"git clone https://github.com/anyenv/anyenv {os.path.expanduser('~/.anyenv')}"
+                'git clone https://github.com/anyenv/anyenv {path}'.format(
+                    path=os.path.expanduser('~/.anyenv')
+                )
             )
         )
     if not os.path.isdir(os.path.expanduser('~/.anyenv/plugins')):
         os.makedirs(os.path.expanduser('~/.anyenv/plugins'))
     subprocess.check_call(
         shlex.split(
-            f"git clone https://github.com/znz/anyenv-update.git {os.path.expanduser('~/.anyenv/plugins/anyenv-update')}"
+            'git clone https://github.com/znz/anyenv-update.git {path}'.format(
+                path=os.path.expanduser('~/.anyenv/plugins/anyenv-update')
+            )
         )
     )
 
@@ -267,7 +273,11 @@ def vim(passwd):
     if not os.path.isdir(os.path.expanduser('~/.cache/dein')):
         os.makedirs(os.path.expanduser('~/.cache/dein'))
     subprocess.check_call(
-        shlex.split(f"sh /tmp/installer.sh {os.path.expanduser('~/.cache/dein')}")
+        shlex.split(
+            'sh /tmp/installer.sh {path}'.format(
+                path=os.path.expanduser('~/.cache/dein')
+            )
+        )
     )
 
     if not os.path.isdir(os.path.expanduser('~/.config/nvim/plugins')):
@@ -338,7 +348,12 @@ def powerline(passwd):
 
 
 def main():
-    args = sys.argv[1:]
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser()
+    parser.add_argument(
+        '-a', '--all', action='store_true', help='install all available apps.'
+    )
     choices = [
         'pkg',
         'peco',
@@ -354,45 +369,40 @@ def main():
         'vim',
         'latex',
     ]
+    parser.add_argument(
+        'choices',
+        nargs='*',
+        default=[],
+        help='select install app. choose from {choices}'.format(choices=choices),
+    )
+    args = parser.parse_args()
 
-    # help
-    if '-h' in args or '--help' in args:
-        print(f"usage: setup [-h] [-a] {{{','.join(choices)}}}")
-        print()
-        print("positional arguments:")
-        print(f"  {{{','.join(choices)}}}")
-        print("                        select install app.")
-        print()
-        print("optional arguments:")
-        print("  -h, --help            show this help message and exit")
-        print("  -a, --all             install all available apps.")
-        sys.exit(0)
-
-    # error check
-    if not args:
-        print('setup: error: the following arguments are required', file=sys.stderr)
-        sys.exit(1)
-    elif '-a' not in args and '--all' not in args:
-        _choices = [f"'{c}'" for c in choices]
-        for arg in args:
-            if arg not in choices:
-                print(f"usage: setup [-h] {{{','.join(choices)}}}", file=sys.stderr)
-                print(
-                    f"setup: error: invalid choice: {arg} (choose from {', '.join(_choices)})",
-                    file=sys.stderr,
-                )
-                sys.exit(1)
-
-    # set up
-    passwd = (getpass.getpass() + '\n').encode()
-
-    if '-a' in args or '--all' in args:
+    if args.all:
+        passwd = (getpass.getpass() + '\n').encode()
         for c in choices:
             globals()[c](passwd)
 
-    else:
-        for a in args:
-            globals()[a](passwd)
+        sys.exit(0)
+
+    if not len(args.choices):
+        print(
+            "setup: error: argument choise: invalid choice: '' (choose from {choices})".format(
+                choices=choices
+            )
+        )
+        sys.exit(1)
+    for c in args.choices:
+        if c not in choices:
+            print(
+                "setup: error: argument choise: invalid choice: '{choice}' (choose from {choices})".format(
+                    choice=c, choices=choices
+                )
+            )
+            sys.exit(1)
+
+    passwd = (getpass.getpass() + '\n').encode()
+    for c in args.choices:
+        globals()[c](passwd)
 
 
 if __name__ == "__main__":
