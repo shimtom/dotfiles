@@ -171,9 +171,9 @@ def zsh(passwd):
     if platform.system() == 'Darwin':
         subprocess.run(shlex.split('brew install zsh'))
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.run(shlex.split('sudo -S apt update'), check=True, input=passwd)
+        subprocess.run('sudo -S apt update', check=True, shell=True, input=passwd)
         subprocess.run(
-            shlex.split('sudo -S apt install -y zsh curl'), check=True, input=passwd
+            'sudo -S apt install -y zsh curl', check=True, shell=True, input=passwd
         )
 
     _symlink(os.path.join(DOTDIR, 'zsh/zlogin'), os.path.expanduser('~/.zlogin'))
@@ -183,16 +183,15 @@ def zsh(passwd):
     _symlink(os.path.join(DOTDIR, 'zsh/zshrc'), os.path.expanduser('~/.zshrc'))
 
     subprocess.run(
-        shlex.split(
-            'curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh'
-        ),
+        'curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh',
         check=True,
+        shell=True,
     )
     subprocess.run(
-        shlex.split('zsh -c "source ~/.zplug/init.zsh && zplug check"'), check=True
+        'zsh -c "source ~/.zplug/init.zsh && zplug check"', check=True, shell=True
     )
     subprocess.run(
-        shlex.split('zsh -c "source ~/.zplug/init.zsh && zplug install"'), check=True
+        'zsh -c "source ~/.zplug/init.zsh && zplug install"', check=True, shell=True
     )
 
 
@@ -202,19 +201,24 @@ def fish(passwd):
     if platform.system() == 'Darwin':
         subprocess.run(shlex.split('brew install fish'), check=True)
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.run('sudo -S apt install -y fish curl', check=True, shell=True, input=passwd
+        subprocess.run(
+            'sudo -S apt install -y fish curl', check=True, shell=True, input=passwd
         )
 
     subprocess.run(
-            'curl https://git.io/fisher --create-dirs -sLo {fisher_path}'.format(
-                fisher_path=os.path.expanduser('~/.config/fish/functions/fisher.fish')
-            ),
+        'curl https://git.io/fisher --create-dirs -sLo {fisher_path}'.format(
+            fisher_path=os.path.expanduser('~/.config/fish/functions/fisher.fish')
+        ),
         check=True,
         shell=True,
     )
     subprocess.run("fish -c 'fisher add jethrokuan/z'", check=True, shell=True)
-    subprocess.run("fish -c 'fisher add oh-my-fish/plugin-peco'", check=True, shell=True)
-    subprocess.run("fish -c 'fisher add oh-my-fish/theme-bobthefish'", check=True, shell=True)
+    subprocess.run(
+        "fish -c 'fisher add oh-my-fish/plugin-peco'", check=True, shell=True
+    )
+    subprocess.run(
+        "fish -c 'fisher add oh-my-fish/theme-bobthefish'", check=True, shell=True
+    )
     _symlink(
         os.path.join(DOTDIR, 'fish/config.fish'),
         os.path.expanduser('~/.config/fish/config.fish'),
@@ -231,7 +235,7 @@ def tmux(passwd):
         subprocess.run(shlex.split('brew install tmux'), check=True)
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
         subprocess.run(
-            shlex.split('sudo -S apt install -y tmux'), check=True, input=passwd
+            'sudo -S apt install -y tmux', check=True, shell=True, input=passwd
         )
 
     _symlink(os.path.join(DOTDIR, 'tmux/tmux.conf'), os.path.expanduser('~/.tmux.conf'))
@@ -254,6 +258,13 @@ def anyenv(_):
             check=True,
             shell=True,
         )
+        subprocess.run(
+            '{anyenv} install --init'.format(
+                anyenv=os.path.expanduser('~/.anyenv/bin/anyenv')
+            ),
+            check=True,
+            shell=True,
+        )
     if not os.path.exists(os.path.expanduser('~/.anyenv/plugins')):
         os.makedirs(os.path.expanduser('~/.anyenv/plugins'))
         subprocess.run(
@@ -264,15 +275,18 @@ def anyenv(_):
             shell=True,
         )
 
-    subprocess.run('{anyenv} install --force-init'.format(anyenv=os.path.expanduser('~/.anyenv/bin/anyenv')), check=True, shell=True)
-    # subprocess.run('eval "$({anyenv} init -)"'.format(anyenv=os.path.expanduser('~/.anyenv/bin/anyenv')), check=True, shell=True)
 
 @depend('anyenv')
 @application('python')
 def python(_):
-    subprocess.run('{anyenv} install pyenv'.format(anyenv=os.path.expanduser('~/.anyenv/bin/anyenv')), check=True, shell=True)
-    subprocess.run('exec $SHELL -l', check=True, shell=True)
-    subprocess.run('pyenv install 3.6.8', check=True, shell=True)
+    subprocess.run(
+        '{anyenv} install -s pyenv'.format(
+            anyenv=os.path.expanduser('~/.anyenv/bin/anyenv')
+        ),
+        check=True,
+        shell=True,
+    )
+    subprocess.run('pyenv install -s 3.6.8', check=True, shell=True)
     subprocess.run('pyenv global 3.6.8', check=True, shell=True)
 
 
@@ -282,38 +296,36 @@ def vim(passwd):
     if platform.system() == 'Darwin':
         subprocess.run(shlex.split('brew install neovim'), check=True)
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.run(shlex.split('sudo -S apt update'), check=True, input=passwd)
+        subprocess.run('sudo -S apt update', check=True, shell=True, input=passwd)
         subprocess.run(
-            shlex.split('sudo -S apt install -y software-properties-common curl'),
+            'sudo -S apt install -y software-properties-common curl',
             check=True,
+            shell=True,
             input=passwd,
         )
         subprocess.run(
-            shlex.split('sudo -S add-apt-repository -y ppa:neovim-ppa/stable'),
+            'sudo -S add-apt-repository -y ppa:neovim-ppa/stable',
             check=True,
+            shell=True,
             input=passwd,
         )
-        subprocess.run(shlex.split('sudo -S apt update'), check=True, input=passwd)
+        subprocess.run('sudo -S apt update', check=True, shell=True, input=passwd)
         subprocess.run(
-            shlex.split('sudo -S apt install -y neovim'), check=True, input=passwd
+            'sudo -S apt install -y neovim', check=True, shell=True, input=passwd
         )
 
-    subprocess.run(shlex.split('pip3 install --upgrade neovim'), check=True)
+    subprocess.run('pip3 install --upgrade neovim', shell=True, check=True)
     subprocess.run(
-        shlex.split(
-            'curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > /tmp/installer.sh'
-        ),
+        'curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > /tmp/installer.sh',
         check=True,
+        shell=True,
     )
     if not os.path.isdir(os.path.expanduser('~/.cache/dein')):
         os.makedirs(os.path.expanduser('~/.cache/dein'))
     subprocess.run(
-        shlex.split(
-            'sh /tmp/installer.sh {path}'.format(
-                path=os.path.expanduser('~/.cache/dein')
-            )
-        ),
+        'sh /tmp/installer.sh {path}'.format(path=os.path.expanduser('~/.cache/dein')),
         check=True,
+        shell=True,
     )
 
     if not os.path.isdir(os.path.expanduser('~/.config/nvim/plugins')):
@@ -371,7 +383,7 @@ def latex(passwd):
         )
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
         subprocess.run(
-            shlex.split('sudo -S apt install -y texlive-full'), check=True, input=passwd
+            'sudo -S apt install -y texlive-full', check=True, shell=True, input=passwd
         )
     _symlink(
         os.path.join(DOTDIR, 'latexmk/latexmkrc'), os.path.expanduser('~/.latexmkrc')
@@ -381,7 +393,7 @@ def latex(passwd):
 @depend('python')
 @application('powerline')
 def powerline(passwd):
-    subprocess.run(shlex.split('pip3 install powerline-status'), check=True)
+    subprocess.run('pip3 install powerline-status', check=True, shell=True)
 
 
 def main():
