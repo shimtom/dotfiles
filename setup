@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from __future__ import absolute_import, division, print_function
 
 import getpass
@@ -26,7 +26,7 @@ def _symlink(src, dst, target_is_directory=False):
     elif (target_is_directory and os.path.isdir(dst)) or (
         not target_is_directory and os.path.isfile(dst)
     ):
-        raise FileExistsError(f'{dst} already exists.')
+        raise FileExistsError('{dst} already exists.'.format(dst=dst))
 
     os.symlink(src, dst, target_is_directory)
 
@@ -36,7 +36,7 @@ def application(name):
         def _setup(*args, **kwargs):
             if name in COMPLETED:
                 return
-            print(f"\033[0;34m===>\033[0;39m set up '{name}'")
+            print("\033[0;34m===>\033[0;39m set up '{name}'".format(name=name))
             func(*args, **kwargs)
             COMPLETED.append(name)
 
@@ -60,30 +60,37 @@ def depend(*apps):
 @application('pkg')
 def pkg(passwd):
     if platform.system() == 'Darwin':
-        subprocess.check_call(
+        subprocess.run(
             shlex.split(
                 '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
-            )
+            ),
+            check=True,
         )
-        subprocess.check_call(shlex.split('brew tap caskroom/cask'))
-        subprocess.check_call(shlex.split('brew update'))
-        subprocess.check_call(shlex.split('brew upgrade'))
+        subprocess.run(shlex.split('brew tap caskroom/cask'), check=True)
+        subprocess.run(shlex.split('brew update'), check=True)
+        subprocess.run(shlex.split('brew upgrade'), check=True)
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(shlex.split('sudo -S apt update'), input=passwd)
-        subprocess.check_call(shlex.split('sudo -S apt upgrade -y'), input=passwd)
-        subprocess.check_call(shlex.split('sudo -S apt full-upgrade -y'), input=passwd)
-        subprocess.check_call(shlex.split('sudo -S apt autoremove -y'), input=passwd)
-        subprocess.check_call(shlex.split('sudo -S apt clean -y'), input=passwd)
+        subprocess.run('sudo -S apt update', check=True, shell=True, input=passwd)
+        subprocess.run('sudo -S apt upgrade -y', check=True, shell=True, input=passwd)
+        subprocess.run(
+            'sudo -S apt full-upgrade -y', check=True, shell=True, input=passwd
+        )
+        subprocess.run(
+            'sudo -S apt autoremove -y', check=True, shell=True, input=passwd
+        )
+        subprocess.run('sudo -S apt clean -y', check=True, shell=True, input=passwd)
 
 
 @depend('pkg')
 @application('git')
 def git(passwd):
     if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install git'))
+        subprocess.run(shlex.split('brew install git'), check=True)
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(shlex.split('sudo -S apt update'), input=passwd)
-        subprocess.check_call(shlex.split('sudo -S apt install -y git'), input=passwd)
+        subprocess.run('sudo -S apt update', check=True, shell=True, input=passwd)
+        subprocess.run(
+            'sudo -S apt install -y git', check=True, shell=True, input=passwd
+        )
 
     _symlink(
         os.path.join(DOTDIR, 'git/gitignore_global'),
@@ -95,17 +102,31 @@ def git(passwd):
 
 @depend('pkg')
 @application('peco')
-def peco(_):
+def peco(passwd):
     if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install peoc'))
+        subprocess.run(shlex.split('brew install peoc'), check=True)
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(
-            shlex.split(
-                'wget -O - https://github.com/peco/peco/releases/download/v0.5.3/peco_linux_amd64.tar.gz | tar zxvf -'
-            )
+        subprocess.run(
+            'wget -O - https://github.com/peco/peco/releases/download/v0.5.3/peco_linux_amd64.tar.gz | tar zxvf -',
+            check=True,
+            shell=True,
         )
-        shutil.move('peco_linux_amd64/peco', '/usr/local/bin/')
-        os.chmod('/usr/local/bin/peco', stat.S_IXOTH)
+        if os.path.exists('/usr/local/bin/peco'):
+            subprocess.run(
+                'sudo -S rm -f /usr/local/bin/peco',
+                check=True,
+                shell=True,
+                input=passwd,
+            )
+        subprocess.run(
+            'sudo -S mv peco_linux_amd64/peco /usr/local/bin/',
+            check=True,
+            shell=True,
+            input=passwd,
+        )
+        subprocess.run(
+            'sudo -S chmod +x /usr/local/bin/peco', check=True, shell=True, input=passwd
+        )
         shutil.rmtree('peco_linux_amd64')
 
 
@@ -113,11 +134,11 @@ def peco(_):
 @application('imagemagick')
 def imagemagick(passwd):
     if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install imagemagick'))
+        subprocess.run(shlex.split('brew install imagemagick'), check=True)
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(shlex.split('sudo -S apt update'), input=passwd)
-        subprocess.check_call(
-            shlex.split('sudo -S apt install -y imagemagick'), input=passwd
+        subprocess.run('sudo -S apt update', check=True, shell=True, input=passwd)
+        subprocess.run(
+            'sudo -S apt install -y imagemagick', check=True, shell=True, input=passwd
         )
 
 
@@ -125,11 +146,11 @@ def imagemagick(passwd):
 @application('ffmpeg')
 def ffmpeg(passwd):
     if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install ffmpeg'))
+        subprocess.run(shlex.split('brew install ffmpeg'), check=True)
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(shlex.split('sudo -S apt update'), input=passwd)
-        subprocess.check_call(
-            shlex.split('sudo -S apt install -y ffmpeg'), input=passwd
+        subprocess.run('sudo -S apt update', check=True, shell=True, input=passwd)
+        subprocess.run(
+            'sudo -S apt install -y ffmpeg', check=True, shell=True, input=passwd
         )
 
 
@@ -148,11 +169,11 @@ def bash(_):
 @application('zsh')
 def zsh(passwd):
     if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install zsh'))
+        subprocess.run(shlex.split('brew install zsh'))
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(shlex.split('sudo -S apt update'), input=passwd)
-        subprocess.check_call(
-            shlex.split('sudo -S apt install -y zsh curl'), input=passwd
+        subprocess.run('sudo -S apt update', check=True, shell=True, input=passwd)
+        subprocess.run(
+            'sudo -S apt install -y zsh curl', check=True, shell=True, input=passwd
         )
 
     _symlink(os.path.join(DOTDIR, 'zsh/zlogin'), os.path.expanduser('~/.zlogin'))
@@ -161,16 +182,16 @@ def zsh(passwd):
     _symlink(os.path.join(DOTDIR, 'zsh/zshenv'), os.path.expanduser('~/.zshenv'))
     _symlink(os.path.join(DOTDIR, 'zsh/zshrc'), os.path.expanduser('~/.zshrc'))
 
-    subprocess.check_call(
-        shlex.split(
-            'curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh'
-        )
+    subprocess.run(
+        'curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh',
+        check=True,
+        shell=True,
     )
-    subprocess.check_call(
-        shlex.split('zsh -c "source ~/.zplug/init.zsh && zplug check"')
+    subprocess.run(
+        'zsh -c "source ~/.zplug/init.zsh && zplug check"', check=True, shell=True
     )
-    subprocess.check_call(
-        shlex.split('zsh -c "source ~/.zplug/init.zsh && zplug install"')
+    subprocess.run(
+        'zsh -c "source ~/.zplug/init.zsh && zplug install"', check=True, shell=True
     )
 
 
@@ -178,20 +199,26 @@ def zsh(passwd):
 @application('fish')
 def fish(passwd):
     if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install fish'))
+        subprocess.run(shlex.split('brew install fish'), check=True)
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(
-            shlex.split('sudo -S apt install -y fish curl'), input=passwd
+        subprocess.run(
+            'sudo -S apt install -y fish curl', check=True, shell=True, input=passwd
         )
 
-    subprocess.check_call(
-        shlex.split(
-            f"curl https://git.io/fisher --create-dirs -sLo {os.path.expanduser('~/.config/fish/functions/fisher.fish')}"
-        )
+    subprocess.run(
+        'curl https://git.io/fisher --create-dirs -sLo {fisher_path}'.format(
+            fisher_path=os.path.expanduser('~/.config/fish/functions/fisher.fish')
+        ),
+        check=True,
+        shell=True,
     )
-    subprocess.check_call(shlex.split('fisher add jethrokuan/z'))
-    subprocess.check_call(shlex.split('fisher add oh-my-fish/plugin-peco'))
-    subprocess.check_call(shlex.split('fisher add oh-my-fish/theme-bobthefish'))
+    subprocess.run("fish -c 'fisher add jethrokuan/z'", check=True, shell=True)
+    subprocess.run(
+        "fish -c 'fisher add oh-my-fish/plugin-peco'", check=True, shell=True
+    )
+    subprocess.run(
+        "fish -c 'fisher add oh-my-fish/theme-bobthefish'", check=True, shell=True
+    )
     _symlink(
         os.path.join(DOTDIR, 'fish/config.fish'),
         os.path.expanduser('~/.config/fish/config.fish'),
@@ -202,10 +229,14 @@ def fish(passwd):
 @application('tmux')
 def tmux(passwd):
     if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install reattach-to-user-namespace'))
-        subprocess.check_call(shlex.split('brew install tmux'))
+        subprocess.run(
+            shlex.split('brew install reattach-to-user-namespace'), check=True
+        )
+        subprocess.run(shlex.split('brew install tmux'), check=True)
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(shlex.split('sudo -S apt install -y tmux'), input=passwd)
+        subprocess.run(
+            'sudo -S apt install -y tmux', check=True, shell=True, input=passwd
+        )
 
     _symlink(os.path.join(DOTDIR, 'tmux/tmux.conf'), os.path.expanduser('~/.tmux.conf'))
 
@@ -214,60 +245,87 @@ def tmux(passwd):
 @application('anyenv')
 def anyenv(_):
     if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install anyenv'))
-    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(
-            shlex.split(
-                f"git clone https://github.com/anyenv/anyenv {os.path.expanduser('~/.anyenv')}"
-            )
+        subprocess.run(shlex.split('brew install anyenv'), check=True)
+    elif (
+        platform.system() == 'Linux'
+        and platform.dist()[0] == 'Ubuntu'
+        and not os.path.exists(os.path.expanduser('~/.anyenv'))
+    ):
+        subprocess.run(
+            'git clone https://github.com/anyenv/anyenv {path}'.format(
+                path=os.path.expanduser('~/.anyenv')
+            ),
+            check=True,
+            shell=True,
         )
-    if not os.path.isdir(os.path.expanduser('~/.anyenv/plugins')):
+        subprocess.run(
+            '{anyenv} install --init'.format(
+                anyenv=os.path.expanduser('~/.anyenv/bin/anyenv')
+            ),
+            check=True,
+            shell=True,
+        )
+    if not os.path.exists(os.path.expanduser('~/.anyenv/plugins')):
         os.makedirs(os.path.expanduser('~/.anyenv/plugins'))
-    subprocess.check_call(
-        shlex.split(
-            f"git clone https://github.com/znz/anyenv-update.git {os.path.expanduser('~/.anyenv/plugins/anyenv-update')}"
+        subprocess.run(
+            'git clone https://github.com/znz/anyenv-update.git {path}'.format(
+                path=os.path.expanduser('~/.anyenv/plugins/anyenv-update')
+            ),
+            check=True,
+            shell=True,
         )
-    )
 
 
 @depend('anyenv')
 @application('python')
 def python(_):
-    subprocess.check_call(shlex.split('anyenv install pyenv'))
-    subprocess.check_call(shlex.split('pyenv install 3.6.8'))
-    subprocess.check_call(shlex.split('pyenv global 3.6.8'))
+    subprocess.run(
+        '{anyenv} install -s pyenv'.format(
+            anyenv=os.path.expanduser('~/.anyenv/bin/anyenv')
+        ),
+        check=True,
+        shell=True,
+    )
+    subprocess.run('pyenv install -s 3.6.8', check=True, shell=True)
+    subprocess.run('pyenv global 3.6.8', check=True, shell=True)
 
 
 @depend('pkg', 'python')
 @application('vim')
 def vim(passwd):
     if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install neovim'))
+        subprocess.run(shlex.split('brew install neovim'), check=True)
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(shlex.split('sudo -S apt update'), input=passwd)
-        subprocess.check_call(
-            shlex.split('sudo -S apt install -y software-properties-common curl'),
+        subprocess.run('sudo -S apt update', check=True, shell=True, input=passwd)
+        subprocess.run(
+            'sudo -S apt install -y software-properties-common curl',
+            check=True,
+            shell=True,
             input=passwd,
         )
-        subprocess.check_call(
-            shlex.split('sudo -S add-apt-repository -y ppa:neovim-ppa/stable'),
+        subprocess.run(
+            'sudo -S add-apt-repository -y ppa:neovim-ppa/stable',
+            check=True,
+            shell=True,
             input=passwd,
         )
-        subprocess.check_call(shlex.split('sudo -S apt update'), input=passwd)
-        subprocess.check_call(
-            shlex.split('sudo -S apt install -y neovim'), input=passwd
+        subprocess.run('sudo -S apt update', check=True, shell=True, input=passwd)
+        subprocess.run(
+            'sudo -S apt install -y neovim', check=True, shell=True, input=passwd
         )
 
-    subprocess.check_call(shlex.split('pip3 install --upgrade neovim'))
-    subprocess.check_call(
-        shlex.split(
-            'curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > /tmp/installer.sh'
-        )
+    subprocess.run('pip3 install --upgrade neovim', shell=True, check=True)
+    subprocess.run(
+        'curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > /tmp/installer.sh',
+        check=True,
+        shell=True,
     )
     if not os.path.isdir(os.path.expanduser('~/.cache/dein')):
         os.makedirs(os.path.expanduser('~/.cache/dein'))
-    subprocess.check_call(
-        shlex.split(f"sh /tmp/installer.sh {os.path.expanduser('~/.cache/dein')}")
+    subprocess.run(
+        'sh /tmp/installer.sh {path}'.format(path=os.path.expanduser('~/.cache/dein')),
+        check=True,
+        shell=True,
     )
 
     if not os.path.isdir(os.path.expanduser('~/.config/nvim/plugins')):
@@ -310,21 +368,22 @@ def vim(passwd):
 @application('latex')
 def latex(passwd):
     if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install ghostscript'))
-        subprocess.check_call(shlex.split('brew cask install basictex'))
-        subprocess.check_call(shlex.split('sudo -S tlmgr paper a4'), input=passwd)
-        subprocess.check_call(
-            shlex.split('sudo -S tlmgr update --self --all'), input=passwd
+        subprocess.run(shlex.split('brew install ghostscript'), check=True)
+        subprocess.run(shlex.split('brew cask install basictex'), check=True)
+        subprocess.run(shlex.split('sudo -S tlmgr paper a4'), check=True, input=passwd)
+        subprocess.run(
+            shlex.split('sudo -S tlmgr update --self --all'), check=True, input=passwd
         )
-        subprocess.check_call(
+        subprocess.run(
             shlex.split(
                 'sudo -S tlmgr install collection-langjapanese latexmk texdoc latexindent chktex cite siunitx'
             ),
+            check=True,
             input=passwd,
         )
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(
-            shlex.split('sudo -S apt install -y texlive-full'), input=passwd
+        subprocess.run(
+            'sudo -S apt install -y texlive-full', check=True, shell=True, input=passwd
         )
     _symlink(
         os.path.join(DOTDIR, 'latexmk/latexmkrc'), os.path.expanduser('~/.latexmkrc')
@@ -334,11 +393,16 @@ def latex(passwd):
 @depend('python')
 @application('powerline')
 def powerline(passwd):
-    subprocess.check_call(shlex.split('pip3 install powerline-status'))
+    subprocess.run('pip3 install powerline-status', check=True, shell=True)
 
 
 def main():
-    args = sys.argv[1:]
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser()
+    parser.add_argument(
+        '-a', '--all', action='store_true', help='install all available apps.'
+    )
     choices = [
         'pkg',
         'peco',
@@ -354,45 +418,40 @@ def main():
         'vim',
         'latex',
     ]
+    parser.add_argument(
+        'choices',
+        nargs='*',
+        default=[],
+        help='select install app. choose from {choices}'.format(choices=choices),
+    )
+    args = parser.parse_args()
 
-    # help
-    if '-h' in args or '--help' in args:
-        print(f"usage: setup [-h] [-a] {{{','.join(choices)}}}")
-        print()
-        print("positional arguments:")
-        print(f"  {{{','.join(choices)}}}")
-        print("                        select install app.")
-        print()
-        print("optional arguments:")
-        print("  -h, --help            show this help message and exit")
-        print("  -a, --all             install all available apps.")
-        sys.exit(0)
-
-    # error check
-    if not args:
-        print('setup: error: the following arguments are required', file=sys.stderr)
-        sys.exit(1)
-    elif '-a' not in args and '--all' not in args:
-        _choices = [f"'{c}'" for c in choices]
-        for arg in args:
-            if arg not in choices:
-                print(f"usage: setup [-h] {{{','.join(choices)}}}", file=sys.stderr)
-                print(
-                    f"setup: error: invalid choice: {arg} (choose from {', '.join(_choices)})",
-                    file=sys.stderr,
-                )
-                sys.exit(1)
-
-    # set up
-    passwd = (getpass.getpass() + '\n').encode()
-
-    if '-a' in args or '--all' in args:
+    if args.all:
+        passwd = (getpass.getpass() + '\n').encode()
         for c in choices:
             globals()[c](passwd)
 
-    else:
-        for a in args:
-            globals()[a](passwd)
+        sys.exit(0)
+
+    if not len(args.choices):
+        print(
+            "setup: error: argument choise: invalid choice: '' (choose from {choices})".format(
+                choices=choices
+            )
+        )
+        sys.exit(1)
+    for c in args.choices:
+        if c not in choices:
+            print(
+                "setup: error: argument choise: invalid choice: '{choice}' (choose from {choices})".format(
+                    choice=c, choices=choices
+                )
+            )
+            sys.exit(1)
+
+    passwd = (getpass.getpass() + '\n').encode()
+    for c in args.choices:
+        globals()[c](passwd)
 
 
 if __name__ == "__main__":
