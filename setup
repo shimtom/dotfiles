@@ -8,8 +8,24 @@ import shlex
 import shutil
 import stat
 import subprocess
-import sys
+import click
 
+
+APP_NAMES = [
+    'pkg',
+    'peco',
+    'imagemagick',
+    'ffmpeg',
+    'bash',
+    'zsh',
+    'fish',
+    'tmux',
+    'git',
+    'anyenv',
+    'python',
+    'vim',
+    'latex',
+]
 DOTDIR = os.path.dirname(os.path.abspath(__file__))
 COMPLETED = []
 
@@ -430,68 +446,26 @@ def latex(passwd, dry_run):
 def powerline(passwd, dry_run):
     def run(command, password=None):
         return _run(command, passwd=password, dry_run=dry_run)
+
     run('pip3 install powerline-status')
 
 
-def main():
-    args = sys.argv[1:]
-    choices = [
-        'pkg',
-        'peco',
-        'imagemagick',
-        'ffmpeg',
-        'bash',
-        'zsh',
-        'fish',
-        'tmux',
-        'git',
-        'anyenv',
-        'python',
-        'vim',
-        'latex',
-    ]
+@click.command()
+@click.argument('apps', type=click.Choice(APP_NAMES), nargs=-1)
+@click.option(
+    '-a', '--all', 'install_all', is_flag=True, help='install all available apps.'
+)
+@click.option('--dry-run', is_flag=True, help='dry run mode.')
+def main(apps, install_all, dry_run):
+    if install_all:
+        apps = APP_NAMES
 
-    # help
-    if '-h' in args or '--help' in args:
-        print(f"usage: setup [-h] [-a] {{{','.join(choices)}}}")
-        print()
-        print("positional arguments:")
-        print(f"  {{{','.join(choices)}}}")
-        print("                        select install app.")
-        print()
-        print("optional arguments:")
-        print("  -h, --help            show this help message and exit")
-        print("  -a, --all             install all available apps.")
-        sys.exit(0)
-
-    # error check
-    if not args:
-        print('setup: error: the following arguments are required', file=sys.stderr)
-        sys.exit(1)
-    elif '-a' not in args and '--all' not in args:
-        _choices = [f"'{c}'" for c in choices]
-        for arg in args:
-            if arg not in choices:
-                print(f"usage: setup [-h] {{{','.join(choices)}}}", file=sys.stderr)
-                print(
-                    f"setup: error: invalid choice: {arg} (choose from {', '.join(_choices)})",
-                    file=sys.stderr,
-                )
-                sys.exit(1)
-
-    # set up
-    dry_run = '--dry-run' in args
     passwd = None
     if not dry_run:
         passwd = (getpass.getpass() + '\n').encode()
 
-    if '-a' in args or '--all' in args:
-        for c in choices:
-            globals()[c](passwd, dry_run)
-
-    else:
-        for a in args:
-            globals()[a](passwd, dry_run)
+    for app in apps:
+        globals()[app](passwd, dry_run)
 
 
 if __name__ == "__main__":
