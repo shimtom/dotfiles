@@ -14,13 +14,43 @@ DOTDIR = os.path.dirname(os.path.abspath(__file__))
 COMPLETED = []
 
 
-def _copy(src, dst):
+def _move(src, dst, dry_run=False):
+    if dry_run:
+        print('mv {src} {dst}'.format(src=src, dst=dst))
+        return
+    return shutil.move(src, dst)
+
+
+def _chmod(path, mode, dry_run=False):
+    if dry_run:
+        print('chmod {mode} {path}'.format(mode=mode, path=path))
+        return
+    return os.chmod(path, mode)
+
+
+def _rm(path, dry_run=False):
+    if dry_run:
+        print('rm -rf {}'.format(path))
+        return
+    return shutil.rmtree(path)
+
+
+def _copy(src, dst, dry_run=False):
+    if dry_run:
+        print('cp -f {src} {dst}'.format(src=src, dst=dst))
+        return
     if os.path.isfile(dst):
         os.remove(dst)
     shutil.copy(src, dst)
 
 
-def _symlink(src, dst, target_is_directory=False):
+def _symlink(src, dst, target_is_directory=False, dry_run=False):
+    if dry_run:
+        if os.path.islink(dst):
+            print('unlink {}'.format(dst))
+        print('ln -s {src} {dst}'.format(src=src, dst=dst))
+        return
+
     if os.path.islink(dst):
         os.unlink(dst)
     elif (target_is_directory and os.path.isdir(dst)) or (
@@ -29,6 +59,13 @@ def _symlink(src, dst, target_is_directory=False):
         raise FileExistsError(f'{dst} already exists.')
 
     os.symlink(src, dst, target_is_directory)
+
+
+def _run(command, passwd=None, dry_run=False):
+    if dry_run:
+        print(command)
+        return
+    return subprocess.check_call(shlex.split(command), stdin=passwd)
 
 
 def application(name):
@@ -58,283 +95,342 @@ def depend(*apps):
 
 
 @application('pkg')
-def pkg(passwd):
+def pkg(passwd, dry_run):
+    def run(command, password=None):
+        return _run(command, passwd=password, dry_run=dry_run)
+
     if platform.system() == 'Darwin':
-        subprocess.check_call(
-            shlex.split(
-                '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
-            )
+        run(
+            '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
         )
-        subprocess.check_call(shlex.split('brew tap caskroom/cask'))
-        subprocess.check_call(shlex.split('brew update'))
-        subprocess.check_call(shlex.split('brew upgrade'))
+        run('brew tap caskroom/cask')
+        run('brew update')
+        run('brew upgrade')
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(shlex.split('sudo -S apt update'), input=passwd)
-        subprocess.check_call(shlex.split('sudo -S apt upgrade -y'), input=passwd)
-        subprocess.check_call(shlex.split('sudo -S apt full-upgrade -y'), input=passwd)
-        subprocess.check_call(shlex.split('sudo -S apt autoremove -y'), input=passwd)
-        subprocess.check_call(shlex.split('sudo -S apt clean -y'), input=passwd)
+        run('sudo -S apt update', password=passwd)
+        run('sudo -S apt update', password=passwd)
+        run('sudo -S apt upgrade -y', password=passwd)
+        run('sudo -S apt full-upgrade -y', password=passwd)
+        run('sudo -S apt autoremove -y', password=passwd)
+        run('sudo -S apt clean -y', password=passwd)
 
 
 @depend('pkg')
 @application('git')
-def git(passwd):
+def git(passwd, dry_run):
+    def run(command, password=None):
+        return _run(command, passwd=password, dry_run=dry_run)
+
     if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install git'))
+        run('brew install git')
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(shlex.split('sudo -S apt update'), input=passwd)
-        subprocess.check_call(shlex.split('sudo -S apt install -y git'), input=passwd)
+        run('sudo -S apt update', password=passwd)
+        run('sudo -S apt install -y git', password=passwd)
 
     _symlink(
         os.path.join(DOTDIR, 'git/gitignore_global'),
         os.path.expanduser('~/.gitignore_global'),
+        dry_run=dry_run,
     )
     # .gitconfig will be edited.
-    _copy(os.path.join(DOTDIR, 'git/gitconfig'), os.path.expanduser('~/.gitconfig'))
+    _copy(
+        os.path.join(DOTDIR, 'git/gitconfig'),
+        os.path.expanduser('~/.gitconfig'),
+        dry_run=dry_run,
+    )
 
 
 @depend('pkg')
 @application('peco')
-def peco(_):
+def peco(_, dry_run):
+    def run(command, password=None):
+        return _run(command, passwd=password, dry_run=dry_run)
+
     if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install peoc'))
+        run('brew install peco')
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(
-            shlex.split(
-                'wget -O - https://github.com/peco/peco/releases/download/v0.5.3/peco_linux_amd64.tar.gz | tar zxvf -'
-            )
+        run(
+            'wget -O - https://github.com/peco/peco/releases/download/v0.5.3/peco_linux_amd64.tar.gz | tar zxvf -'
         )
-        shutil.move('peco_linux_amd64/peco', '/usr/local/bin/')
-        os.chmod('/usr/local/bin/peco', stat.S_IXOTH)
-        shutil.rmtree('peco_linux_amd64')
+        _move('peco_linux_amd64/peco', '/usr/local/bin/', dry_run=dry_run)
+        _chmod('/usr/local/bin/peco', stat.S_IXOTH, dry_run=dry_run)
+        _rm('peco_linux_amd64', dry_run=dry_run)
 
 
 @depend('pkg')
 @application('imagemagick')
-def imagemagick(passwd):
+def imagemagick(passwd, dry_run):
+    def run(command, password=None):
+        return _run(command, passwd=password, dry_run=dry_run)
+
     if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install imagemagick'))
+        run('brew install imagemagick')
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(shlex.split('sudo -S apt update'), input=passwd)
-        subprocess.check_call(
-            shlex.split('sudo -S apt install -y imagemagick'), input=passwd
-        )
+        run('sudo -S apt update', password=passwd)
+        run('sudo -S apt install -y imagemagick', password=passwd)
 
 
 @depend('pkg')
 @application('ffmpeg')
-def ffmpeg(passwd):
+def ffmpeg(passwd, dry_run):
+    def run(command, password=None):
+        return _run(command, passwd=password, dry_run=dry_run)
+
     if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install ffmpeg'))
+        run('brew install ffmpeg')
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(shlex.split('sudo -S apt update'), input=passwd)
-        subprocess.check_call(
-            shlex.split('sudo -S apt install -y ffmpeg'), input=passwd
-        )
+        run('sudo -S apt update', passwd=passwd)
+        run('sudo -S apt install -y ffmpeg', passwd=passwd)
 
 
 @application('bash')
-def bash(_):
-    _symlink(os.path.join(DOTDIR, 'bash/bashrc'), os.path.expanduser('~/.bashrc'))
+def bash(_, dry_run):
     _symlink(
-        os.path.join(DOTDIR, 'bash/bash_profile'), os.path.expanduser('~/.bash_profile')
+        os.path.join(DOTDIR, 'bash/bashrc'),
+        os.path.expanduser('~/.bashrc'),
+        dry_run=dry_run,
     )
     _symlink(
-        os.path.join(DOTDIR, 'bash/bash_logout'), os.path.expanduser('~/.bash_logout')
+        os.path.join(DOTDIR, 'bash/bash_profile'),
+        os.path.expanduser('~/.bash_profile'),
+        dry_run=dry_run,
+    )
+    _symlink(
+        os.path.join(DOTDIR, 'bash/bash_logout'),
+        os.path.expanduser('~/.bash_logout'),
+        dry_run=dry_run,
     )
 
 
 @depend('pkg', 'peco', 'anyenv')
 @application('zsh')
-def zsh(passwd):
+def zsh(passwd, dry_run):
+    def run(command, password=None):
+        return _run(command, passwd=password, dry_run=dry_run)
+
     if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install zsh'))
+        run('brew install zsh')
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(shlex.split('sudo -S apt update'), input=passwd)
-        subprocess.check_call(
-            shlex.split('sudo -S apt install -y zsh curl'), input=passwd
-        )
+        run('sudo -S apt update', password=passwd)
+        run('sudo -S apt install -y zsh curl', password=passwd)
 
-    _symlink(os.path.join(DOTDIR, 'zsh/zlogin'), os.path.expanduser('~/.zlogin'))
-    _symlink(os.path.join(DOTDIR, 'zsh/zlogout'), os.path.expanduser('~/.zlogout'))
-    _symlink(os.path.join(DOTDIR, 'zsh/zprofile'), os.path.expanduser('~/.zprofile'))
-    _symlink(os.path.join(DOTDIR, 'zsh/zshenv'), os.path.expanduser('~/.zshenv'))
-    _symlink(os.path.join(DOTDIR, 'zsh/zshrc'), os.path.expanduser('~/.zshrc'))
+    _symlink(
+        os.path.join(DOTDIR, 'zsh/zlogin'),
+        os.path.expanduser('~/.zlogin'),
+        dry_run=dry_run,
+    )
+    _symlink(
+        os.path.join(DOTDIR, 'zsh/zlogout'),
+        os.path.expanduser('~/.zlogout'),
+        dry_run=dry_run,
+    )
+    _symlink(
+        os.path.join(DOTDIR, 'zsh/zprofile'),
+        os.path.expanduser('~/.zprofile'),
+        dry_run=dry_run,
+    )
+    _symlink(
+        os.path.join(DOTDIR, 'zsh/zshenv'),
+        os.path.expanduser('~/.zshenv'),
+        dry_run=dry_run,
+    )
+    _symlink(
+        os.path.join(DOTDIR, 'zsh/zshrc'),
+        os.path.expanduser('~/.zshrc'),
+        dry_run=dry_run,
+    )
 
-    subprocess.check_call(
-        shlex.split(
-            'curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh'
-        )
+    run(
+        'curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh'
     )
-    subprocess.check_call(
-        shlex.split('zsh -c "source ~/.zplug/init.zsh && zplug check"')
-    )
-    subprocess.check_call(
-        shlex.split('zsh -c "source ~/.zplug/init.zsh && zplug install"')
-    )
+    run('zsh -c "source ~/.zplug/init.zsh && zplug check"')
+    run('zsh -c "source ~/.zplug/init.zsh && zplug install"')
 
 
 @depend('pkg', 'peco', 'anyenv')
 @application('fish')
-def fish(passwd):
-    if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install fish'))
-    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(
-            shlex.split('sudo -S apt install -y fish curl'), input=passwd
-        )
+def fish(passwd, dry_run):
+    def run(command, password=None):
+        return _run(command, passwd=password, dry_run=dry_run)
 
-    subprocess.check_call(
-        shlex.split(
-            f"curl https://git.io/fisher --create-dirs -sLo {os.path.expanduser('~/.config/fish/functions/fisher.fish')}"
+    if platform.system() == 'Darwin':
+        run('brew install fish')
+    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
+        run('sudo -S apt install -y fish curl', password=passwd)
+
+    run(
+        "curl https://git.io/fisher --create-dirs -sLo {}".format(
+            os.path.expanduser('~/.config/fish/functions/fisher.fish')
         )
     )
-    subprocess.check_call(shlex.split('fisher add jethrokuan/z'))
-    subprocess.check_call(shlex.split('fisher add plugin-peco'))
-    subprocess.check_call(shlex.split('fisher add oh-my-fish/theme-bobthefish'))
+    run('fisher add jethrokuan/z')
+    run('fisher add plugin-peco')
+    run('fisher add oh-my-fish/theme-bobthefish')
     _symlink(
         os.path.join(DOTDIR, 'fish/config.fish'),
         os.path.expanduser('~/.config/fish/config.fish'),
+        dry_run=dry_run,
     )
 
 
 @depend('pkg')
 @application('tmux')
-def tmux(passwd):
-    if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install reattach-to-user-namespace'))
-        subprocess.check_call(shlex.split('brew install tmux'))
-    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(shlex.split('sudo -S apt install -y tmux'), input=passwd)
+def tmux(passwd, dry_run):
+    def run(command, password=None):
+        return _run(command, passwd=password, dry_run=dry_run)
 
-    _symlink(os.path.join(DOTDIR, 'tmux/tmux.conf'), os.path.expanduser('~/.tmux.conf'))
+    if platform.system() == 'Darwin':
+        run('brew install reattach-to-user-namespace')
+        run('brew install tmux')
+    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
+        run('sudo -S apt install -y tmux', password=passwd)
+
+    _symlink(
+        os.path.join(DOTDIR, 'tmux/tmux.conf'),
+        os.path.expanduser('~/.tmux.conf'),
+        dry_run=dry_run,
+    )
+
+
+def _mkdir(path, dry_run=False):
+    if dry_run:
+        print('mkdir -p {}'.format(path))
+        return
+    return os.makedirs(path)
 
 
 @depend('pkg', 'git')
 @application('anyenv')
-def anyenv(_):
+def anyenv(_, dry_run):
+    def run(command, password=None):
+        return _run(command, passwd=password, dry_run=dry_run)
+
     if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install anyenv'))
+        run('brew install anyenv')
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(
-            shlex.split(
-                f"git clone https://github.com/anyenv/anyenv {os.path.expanduser('~/.anyenv')}"
+        run(
+            "git clone https://github.com/anyenv/anyenv {}".format(
+                os.path.expanduser('~/.anyenv')
             )
         )
     if not os.path.isdir(os.path.expanduser('~/.anyenv/plugins')):
-        os.makedirs(os.path.expanduser('~/.anyenv/plugins'))
-    subprocess.check_call(
-        shlex.split(
-            f"git clone https://github.com/znz/anyenv-update.git {os.path.expanduser('~/.anyenv/plugins/anyenv-update')}"
+        _mkdir(os.path.expanduser('~/.anyenv/plugins'))
+    run(
+        "git clone https://github.com/znz/anyenv-update.git {}".format(
+            os.path.expanduser('~/.anyenv/plugins/anyenv-update')
         )
     )
 
 
 @depend('anyenv')
 @application('python')
-def python(_):
-    subprocess.check_call(shlex.split('anyenv install pyenv'))
-    subprocess.check_call(shlex.split('pyenv install 3.6.8'))
-    subprocess.check_call(shlex.split('pyenv global 3.6.8'))
+def python(_, dry_run):
+    def run(command, password=None):
+        return _run(command, passwd=password, dry_run=dry_run)
+
+    run('anyenv install pyenv')
+    run('pyenv install 3.6.8')
+    run('pyenv global 3.6.8')
 
 
 @depend('pkg', 'python')
 @application('vim')
-def vim(passwd):
-    if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install neovim'))
-    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(shlex.split('sudo -S apt update'), input=passwd)
-        subprocess.check_call(
-            shlex.split('sudo -S apt install -y software-properties-common curl'),
-            input=passwd,
-        )
-        subprocess.check_call(
-            shlex.split('sudo -S add-apt-repository -y ppa:neovim-ppa/stable'),
-            input=passwd,
-        )
-        subprocess.check_call(shlex.split('sudo -S apt update'), input=passwd)
-        subprocess.check_call(
-            shlex.split('sudo -S apt install -y neovim'), input=passwd
-        )
+def vim(passwd, dry_run):
+    def run(command, password=None):
+        return _run(command, passwd=password, dry_run=dry_run)
 
-    subprocess.check_call(shlex.split('pip3 install --upgrade neovim'))
-    subprocess.check_call(
-        shlex.split(
-            'curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > /tmp/installer.sh'
-        )
+    if platform.system() == 'Darwin':
+        run('brew install neovim')
+    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
+        run('sudo -S apt update', input=passwd)
+
+        run('sudo -S apt install -y software-properties-common curl', password=passwd)
+        run('sudo -S add-apt-repository -y ppa:neovim-ppa/stable', password=passwd)
+        run('sudo -S apt update', password=passwd)
+        run('sudo -S apt install -y neovim', password=passwd)
+
+    run('pip3 install --upgrade neovim')
+    run(
+        'curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > /tmp/installer.sh'
     )
     if not os.path.isdir(os.path.expanduser('~/.cache/dein')):
-        os.makedirs(os.path.expanduser('~/.cache/dein'))
-    subprocess.check_call(
-        shlex.split(f"sh /tmp/installer.sh {os.path.expanduser('~/.cache/dein')}")
-    )
+        _mkdir(os.path.expanduser('~/.cache/dein'), dry_run=dry_run)
+    run("sh /tmp/installer.sh {}".format(os.path.expanduser('~/.cache/dein')))
 
     if not os.path.isdir(os.path.expanduser('~/.config/nvim/plugins')):
-        os.makedirs(os.path.expanduser('~/.config/nvim/plugins'))
+        _mkdir(os.path.expanduser('~/.config/nvim/plugins'))
     _symlink(
         os.path.join(DOTDIR, 'nvim/init.vim'),
         os.path.expanduser('~/.config/nvim/init.vim'),
+        dry_run=dry_run,
     )
     _symlink(
         os.path.join(DOTDIR, 'nvim/editor.vim'),
         os.path.expanduser('~/.config/nvim/editor.vim'),
+        dry_run=dry_run,
     )
     _symlink(
         os.path.join(DOTDIR, 'nvim/core.vim'),
         os.path.expanduser('~/.config/nvim/core.vim'),
+        dry_run=dry_run,
     )
     _symlink(
         os.path.join(DOTDIR, 'nvim/appearance.vim'),
         os.path.expanduser('~/.config/nvim/appearance.vim'),
+        dry_run=dry_run,
     )
     _symlink(
         os.path.join(DOTDIR, 'nvim/plugins/dein.toml'),
         os.path.expanduser('~/.config/nvim/plugins/dein.toml'),
+        dry_run=dry_run,
     )
     _symlink(
         os.path.join(DOTDIR, 'nvim/plugins/dein_lazy.toml'),
         os.path.expanduser('~/.config/nvim/plugins/dein_lazy.toml'),
+        dry_run=dry_run,
     )
     _symlink(
         os.path.join(DOTDIR, 'nvim/plugins/dein_theme.toml'),
         os.path.expanduser('~/.config/nvim/plugins/dein_theme.toml'),
+        dry_run=dry_run,
     )
     _symlink(
         os.path.join(DOTDIR, 'nvim/plugins/dein_python.toml'),
         os.path.expanduser('~/.config/nvim/plugins/dein_python.toml'),
+        dry_run=dry_run,
     )
 
 
 @depend('pkg')
 @application('latex')
-def latex(passwd):
+def latex(passwd, dry_run):
+    def run(command, password=None):
+        return _run(command, passwd=password, dry_run=dry_run)
+
     if platform.system() == 'Darwin':
-        subprocess.check_call(shlex.split('brew install ghostscript'))
-        subprocess.check_call(shlex.split('brew cask install basictex'))
-        subprocess.check_call(shlex.split('sudo -S tlmgr paper a4'), input=passwd)
-        subprocess.check_call(
-            shlex.split('sudo -S tlmgr update --self --all'), input=passwd
-        )
-        subprocess.check_call(
-            shlex.split(
-                'sudo -S tlmgr install collection-langjapanese latexmk texdoc latexindent chktex cite siunitx'
-            ),
-            input=passwd,
+        run('brew install ghostscript')
+        run('brew cask install basictex')
+        run('sudo -S tlmgr paper a4', password=passwd)
+        run('sudo -S tlmgr update --self --all', password=passwd)
+        run(
+            'sudo -S tlmgr install collection-langjapanese latexmk texdoc latexindent chktex cite siunitx',
+            password=passwd,
         )
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        subprocess.check_call(
-            shlex.split('sudo -S apt install -y texlive-full'), input=passwd
-        )
+        run('sudo -S apt install -y texlive-full', password=passwd)
     _symlink(
-        os.path.join(DOTDIR, 'latexmk/latexmkrc'), os.path.expanduser('~/.latexmkrc')
+        os.path.join(DOTDIR, 'latexmk/latexmkrc'),
+        os.path.expanduser('~/.latexmkrc'),
+        dry_run=dry_run,
     )
 
 
 @depend('python')
 @application('powerline')
-def powerline(passwd):
-    subprocess.check_call(shlex.split('pip3 install powerline-status'))
+def powerline(passwd, dry_run):
+    def run(command, password=None):
+        return _run(command, passwd=password, dry_run=dry_run)
+    run('pip3 install powerline-status')
 
 
 def main():
@@ -384,15 +480,18 @@ def main():
                 sys.exit(1)
 
     # set up
-    passwd = (getpass.getpass() + '\n').encode()
+    dry_run = '--dry-run' in args
+    passwd = None
+    if not dry_run:
+        passwd = (getpass.getpass() + '\n').encode()
 
     if '-a' in args or '--all' in args:
         for c in choices:
-            globals()[c](passwd)
+            globals()[c](passwd, dry_run)
 
     else:
         for a in args:
-            globals()[a](passwd)
+            globals()[a](passwd, dry_run)
 
 
 if __name__ == "__main__":
