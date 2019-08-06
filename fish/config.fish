@@ -23,5 +23,8 @@ set -x XDG_CONFIG_HOME $HOME/.config
 set -x PATH $HOME/.anyenv/bin $PATH
 eval (anyenv init - | source)
 
+## openframeworks
+set -x OF_ROOT /usr/local/lib/openframeworks/0.10.1
+
 ## python
 alias pip-upgrade-all 'pip freeze --local | grep -v "^\-e" | cut -d = -f 1 | xargs pip install -U'
