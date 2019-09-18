@@ -261,7 +261,7 @@ $ ./install.sh
 
         ```
         fisher add jethrokuan/z
-        fisher add plugin-peco
+        fisher add oh-my-fish/plugin-peco
         fisher add oh-my-fish/theme-bobthefish
         ```
 
