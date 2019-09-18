@@ -27,6 +27,27 @@ if type "shopt" > /dev/null 2>&1; then
     fi
 fi
 
+# peco
+peco-select-history() {
+    declare l=$(HISTTIMEFORMAT= history | sort -k1,1nr | perl -ne 'BEGIN { my @lines = (); } s/^\s*\d+\s*//; $in=$_; if (!(grep {$in eq $_} @lines)) { push(@lines, $in); print $in; }' | peco --query "$READLINE_LINE")
+    READLINE_LINE="$l"
+    READLINE_POINT=${#l}
+}
+bind -x '"\C-r": peco-select-history'
+
+# history
+# セッションクローズ時の.bash_historyへの書き込みをoff
+shopt -u histappend
+# .bash_historyとメモリ上のコピーを頻繁に同期
+share_history(){
+    history -a
+    history -c
+    history -r
+}
+PROMPT_COMMAND='share_history'
+
+# local bin
+export PATH="$HOME/.local/bin:$PATH"
 
 # Garbled
 case $TERM in
