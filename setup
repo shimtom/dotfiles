@@ -429,7 +429,7 @@ def latex(passwd, dry_run):
         run('sudo -S tlmgr paper a4', password=passwd)
         run('sudo -S tlmgr update --self --all', password=passwd)
         run(
-            'sudo -S tlmgr install collection-langjapanese latexmk texdoc latexindent chktex cite siunitx helvetic courier',
+            'sudo -S tlmgr install collection-langjapanese latexmk texdoc latexindent chktex cite siunitx helvetic courier fontaxes boondox txfonts kastrup tex-gyre newtx',
             password=passwd,
         )
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':

@@ -262,6 +262,13 @@ $ ./install.sh
         ```
         fisher add jethrokuan/z
         fisher add plugin-peco
+        fisher add oh-my-fish/theme-bobthefish
+        ```
+
+    4. link dotfile
+
+        ```bash
+        ln -s -f ${DOTDIR}/fish/config.fish ~/.config/fish/config.fish
         ```
 
 3. set up bash dotfiles
