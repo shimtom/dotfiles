@@ -17,11 +17,15 @@ set -x GOPATH $HOME/go
 set -x PATH $PATH $GOPATH/bin
 
 ## neovim
-set -x XDG_CONFIG_HOME $HOME/.config
+if type "nvim" > /dev/null 2>&1
+    set -x XDG_CONFIG_HOME $HOME/.config
+end
 
 ## anyenv
-set -x PATH $HOME/.anyenv/bin $PATH
-eval (anyenv init - | source)
+if type "anyenv" > /dev/null 2>&1
+    set -x PATH $HOME/.anyenv/bin $PATH
+    eval (anyenv init - | source)
+end
 
 ## openframeworks
 set -x OF_ROOT /usr/local/lib/openframeworks/0.10.1
