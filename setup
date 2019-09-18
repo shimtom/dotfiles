@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from __future__ import absolute_import, division, print_function
 
 import getpass
@@ -72,7 +72,7 @@ def _symlink(src, dst, target_is_directory=False, dry_run=False):
     elif (target_is_directory and os.path.isdir(dst)) or (
         not target_is_directory and os.path.isfile(dst)
     ):
-        raise FileExistsError(f'{dst} already exists.')
+        raise FileExistsError('{dst} already exists.'.format(dst=dst))
 
     os.symlink(src, dst, target_is_directory)
 
@@ -89,7 +89,7 @@ def application(name):
         def _setup(*args, **kwargs):
             if name in COMPLETED:
                 return
-            print(f"\033[0;34m===>\033[0;39m set up '{name}'")
+            print("\033[0;34m===>\033[0;39m set up '{name}'".format(name=name))
             func(*args, **kwargs)
             COMPLETED.append(name)
 
@@ -335,7 +335,6 @@ def anyenv(_, dry_run):
         "git clone https://github.com/znz/anyenv-update.git {}".format(
             os.path.expanduser('~/.anyenv/plugins/anyenv-update')
         )
-    )
 
 
 @depend('anyenv')
