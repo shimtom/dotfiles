@@ -335,6 +335,7 @@ def anyenv(_, dry_run):
         "git clone https://github.com/znz/anyenv-update.git {}".format(
             os.path.expanduser('~/.anyenv/plugins/anyenv-update')
         )
+    )
 
 
 @depend('anyenv')
@@ -428,7 +429,7 @@ def latex(passwd, dry_run):
         run('sudo -S tlmgr paper a4', password=passwd)
         run('sudo -S tlmgr update --self --all', password=passwd)
         run(
-            'sudo -S tlmgr install collection-langjapanese latexmk texdoc latexindent chktex cite siunitx helvetic courier fontaxes boondox txfonts kastrup tex-gyre newtx',
+            'sudo -S tlmgr install collection-langjapanese latexmk texdoc latexindent chktex cite siunitx helvetic courier fontaxes boondox txfonts kastrup tex-gyre newtx preprint',
             password=passwd,
         )
     elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
