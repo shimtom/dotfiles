@@ -32,3 +32,11 @@ set -x OF_ROOT /usr/local/lib/openframeworks/0.10.1
 
 ## python
 alias pip-upgrade-all 'pip freeze --local | grep -v "^\-e" | cut -d = -f 1 | xargs pip install -U'
+
+## ~/.local/bin
+set -x PATH $HOME/.local/bin $PATH
+set -g fish_user_paths "/usr/local/sbin" $fish_user_paths
+set -g fish_user_paths "/usr/local/opt/texinfo/bin" $fish_user_paths
+
+## oh-my-fish/theme-bobthefish
+set -g theme_color_scheme dracula
