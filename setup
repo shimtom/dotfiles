@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import absolute_import, division, print_function
 
+import argparse
 import getpass
 import os
 import platform
@@ -8,8 +9,8 @@ import shlex
 import shutil
 import stat
 import subprocess
-import click
 
+import distro
 
 APP_NAMES = [
     'pkg',
@@ -122,7 +123,7 @@ def pkg(passwd, dry_run):
         run('brew tap caskroom/cask')
         run('brew update')
         run('brew upgrade')
-    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
+    elif platform.system() == 'Linux' and distro.linux_distribution()[0] == 'Ubuntu':
         run('sudo -S apt update', password=passwd)
         run('sudo -S apt update', password=passwd)
         run('sudo -S apt upgrade -y', password=passwd)
@@ -139,7 +140,7 @@ def git(passwd, dry_run):
 
     if platform.system() == 'Darwin':
         run('brew install git')
-    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
+    elif platform.system() == 'Linux' and distro.linux_distribution()[0] == 'Ubuntu':
         run('sudo -S apt update', password=passwd)
         run('sudo -S apt install -y git', password=passwd)
 
@@ -164,7 +165,7 @@ def peco(_, dry_run):
 
     if platform.system() == 'Darwin':
         run('brew install peco')
-    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
+    elif platform.system() == 'Linux' and distro.linux_distribution()[0] == 'Ubuntu':
         run(
             'wget -O - https://github.com/peco/peco/releases/download/v0.5.3/peco_linux_amd64.tar.gz | tar zxvf -'
         )
@@ -181,7 +182,7 @@ def imagemagick(passwd, dry_run):
 
     if platform.system() == 'Darwin':
         run('brew install imagemagick')
-    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
+    elif platform.system() == 'Linux' and distro.linux_distribution()[0] == 'Ubuntu':
         run('sudo -S apt update', password=passwd)
         run('sudo -S apt install -y imagemagick', password=passwd)
 
@@ -194,9 +195,9 @@ def ffmpeg(passwd, dry_run):
 
     if platform.system() == 'Darwin':
         run('brew install ffmpeg')
-    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        run('sudo -S apt update', passwd=passwd)
-        run('sudo -S apt install -y ffmpeg', passwd=passwd)
+    elif platform.system() == 'Linux' and distro.linux_distribution()[0] == 'Ubuntu':
+        run('sudo -S apt update', password=passwd)
+        run('sudo -S apt install -y ffmpeg', password=passwd)
 
 
 @application('bash')
@@ -226,7 +227,7 @@ def zsh(passwd, dry_run):
 
     if platform.system() == 'Darwin':
         run('brew install zsh')
-    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
+    elif platform.system() == 'Linux' and distro.linux_distribution()[0] == 'Ubuntu':
         run('sudo -S apt update', password=passwd)
         run('sudo -S apt install -y zsh curl', password=passwd)
 
@@ -271,7 +272,7 @@ def fish(passwd, dry_run):
 
     if platform.system() == 'Darwin':
         run('brew install fish')
-    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
+    elif platform.system() == 'Linux' and distro.linux_distribution()[0] == 'Ubuntu':
         run('sudo -S apt install -y fish curl', password=passwd)
 
     run(
@@ -298,7 +299,7 @@ def tmux(passwd, dry_run):
     if platform.system() == 'Darwin':
         run('brew install reattach-to-user-namespace')
         run('brew install tmux')
-    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
+    elif platform.system() == 'Linux' and distro.linux_distribution()[0] == 'Ubuntu':
         run('sudo -S apt install -y tmux', password=passwd)
 
     _symlink(
@@ -323,7 +324,7 @@ def anyenv(_, dry_run):
 
     if platform.system() == 'Darwin':
         run('brew install anyenv')
-    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
+    elif platform.system() == 'Linux' and distro.linux_distribution()[0] == 'Ubuntu':
         run(
             "git clone https://github.com/anyenv/anyenv {}".format(
                 os.path.expanduser('~/.anyenv')
@@ -357,8 +358,8 @@ def vim(passwd, dry_run):
 
     if platform.system() == 'Darwin':
         run('brew install neovim')
-    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
-        run('sudo -S apt update', input=passwd)
+    elif platform.system() == 'Linux' and distro.linux_distribution()[0] == 'Ubuntu':
+        run('sudo -S apt update', password=passwd)
 
         run('sudo -S apt install -y software-properties-common curl', password=passwd)
         run('sudo -S add-apt-repository -y ppa:neovim-ppa/stable', password=passwd)
@@ -432,7 +433,7 @@ def latex(passwd, dry_run):
             'sudo -S tlmgr install collection-langjapanese latexmk texdoc latexindent chktex cite siunitx helvetic courier fontaxes boondox txfonts kastrup tex-gyre newtx preprint',
             password=passwd,
         )
-    elif platform.system() == 'Linux' and platform.dist()[0] == 'Ubuntu':
+    elif platform.system() == 'Linux' and distro.linux_distribution()[0] == 'Ubuntu':
         run('sudo -S apt install -y texlive-full', password=passwd)
     _symlink(
         os.path.join(DOTDIR, 'latexmk/latexmkrc'),
@@ -450,13 +451,17 @@ def powerline(passwd, dry_run):
     run('pip3 install powerline-status')
 
 
-@click.command()
-@click.argument('apps', type=click.Choice(APP_NAMES), nargs=-1)
-@click.option(
-    '-a', '--all', 'install_all', is_flag=True, help='install all available apps.'
-)
-@click.option('--dry-run', is_flag=True, help='dry run mode.')
-def main(apps, install_all, dry_run):
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('apps', nargs='*', choices=APP_NAMES)
+    parser.add_argument('-a', '--all', action='store_true', help='install all available apps.')
+    parser.add_argument('--dry-run', action='store_true')
+
+    args = parser.parse_args()
+    apps = args.apps
+    install_all = args.all
+    dry_run = args.dry_run
+
     if install_all:
         apps = APP_NAMES
 
