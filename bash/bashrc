@@ -91,19 +91,3 @@ case $OS_TYPE in
     mac) alias ls='ls -G' ;;
     linux) alias ls='ls --group-directories-first --color=always' ;;
 esac
-
-
-if type "pip" > /dev/null 2>&1; then
-    alias pip-upgrade='pip freeze --local | grep -v "^\-e" | cut -d = -f 1 | xargs pip install -U'
-fi
-
-
-if type "pip3" > /dev/null 2>&1; then
-    alias pip3-upgrade='pip3 freeze --local | grep -v "^\-e" | cut -d = -f 1 | xargs pip3 install -U'
-fi
-
-
-## brew
-if type "brew" > /dev/null 2>&1; then
-    brew-cask-upgrade(){ for app in $(brew cask list); do local latest="$(brew cask info "${app}" | awk 'NR==1{print $2}')"; local versions=($(ls -1 "/usr/local/Caskroom/${app}/.metadata/")); local current=$(echo ${versions} | awk '{print $NF}'); if [[ "${latest}" = "latest" ]]; then echo "[!] ${app}: ${current} == ${latest}"; [[ "$1" = "-f" ]] && brew cask install "${app}" --force; continue; elif [[ "${current}" = "${latest}" ]]; then continue; fi; echo "[+] ${app}: ${current} -> ${latest}"; brew cask uninstall "${app}" --force; brew cask install "${app}"; done; }
-fi
