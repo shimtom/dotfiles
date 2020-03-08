@@ -1,9 +1,9 @@
 #!/bin/bash
 
 if type pbcopy >/dev/null 2>&1; then
-  pbcopy
+  tmux save-buffer - | pbcopy
 elif type xclip >/dev/null 2>&1; then
-  xclip -sel c
+  tmux save-buffer - | xclip -sel c
 elif type xsel >/dev/null 2>&1; then
-  xsel -ib
+  tmux save-buffer - | xsel -ib
 fi
