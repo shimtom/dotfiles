@@ -1,4 +1,4 @@
-# .bashrc
+# ~/.bashrc
 
 # Source global definitions
 if [ -f /etc/bash.bashrc ]; then
@@ -6,29 +6,63 @@ if [ -f /etc/bash.bashrc ]; then
 fi
 
 
-# User specific aliases and functions
-if [ "$(uname)" == 'Darwin' ]; then
-    OS_TYPE="mac"
-elif [ "$(expr substr $(uname -s) 1 5)" == 'Linux' ]; then
-    OS_TYPE='linux'
-elif [ "$(expr substr $(uname -s) 1 10)" == 'MINGW32_NT' ]; then
-    OS_TYPE="cygwin"
-else
-    OS_TYPE="unkown"
-fi
-
-if type "shopt" > /dev/null 2>&1; then
-    if ! shopt -oq posix; then
-        if [ -f /usr/share/bash-completion/bash_completion ]; then
-            . /usr/share/bash-completion/bash_completion
-        elif [ -f /etc/bash_completion ]; then
+# Enable bash completion
+if ! shopt -oq posix; then
+    if [ -f /usr/share/bash-completion/bash_completion ]; then
+        . /usr/share/bash-completion/bash_completion
+    elif [ -f /etc/bash_completion ]; then
         . /etc/bash_completion
-        fi
     fi
 fi
 
-# peco
-if [ -t 1 ]; then
+
+# Change locale depending on environment
+case $TERM in
+    linux) export LANG=C ;;
+    *)     export LANG=ja_JP.UTF-8 ;;
+esac
+
+
+# Sync history immediately
+shopt -u histappend
+export PROMPT_COMMAND="history -a; history -c; history -r"
+
+
+# Set prompt
+export PS1='\[\e[1;37m\]\w\[\e[00m\]$ '
+
+
+# Enable sbin
+if [ -d /usr/local/sbin ]; then
+    export PATH="/usr/local/sbin:$PATH"
+fi
+
+
+# Enable local bin
+if [ -d $HOME/.local/bin ]; then
+    export PATH="$HOME/.local/bin:$PATH"
+fi
+
+
+# Set XDG_CONFIG_HOME
+if [ "${XDG_CONFIG_HOME+foo}" ] && [ -d $HOME/.config ]; then
+    export XDG_CONFIG_HOME="$HOME/.config"
+fi
+
+
+# Enable colored ls
+if [ "$(uname)" == 'Darwin' ]; then
+    # mac
+    alias ls='ls -G'
+elif [ "$(expr substr $(uname -s) 1 5)" == 'Linux' ]; then
+    # linux
+    alias ls='ls --group-directories-first --color=always' ;;
+fi
+
+
+# User specific aliases and functions
+## Registet peco shortcut key
+if type "peco" > /dev/null 2>&1; then
     peco-select-history() {
         declare l=$(HISTTIMEFORMAT= history | sort -k1,1nr | perl -ne 'BEGIN { my @lines = (); } s/^\s*\d+\s*//; $in=$_; if (!(grep {$in eq $_} @lines)) { push(@lines, $in); print $in; }' | peco --query "$READLINE_LINE")
         READLINE_LINE="$l"
@@ -37,40 +71,8 @@ if [ -t 1 ]; then
     bind -x '"\C-r": peco-select-history'
 fi
 
-# history
-# セッションクローズ時の.bash_historyへの書き込みをoff
-shopt -u histappend
-# .bash_historyとメモリ上のコピーを頻繁に同期
-share_history(){
-    history -a
-    history -c
-    history -r
-}
-PROMPT_COMMAND='share_history'
 
-# local bin
-export PATH="$HOME/.local/bin:$PATH"
-
-# Garbled
-case $TERM in
-    linux) export LANG=C ;;
-    *)     export LANG=ja_JP.UTF-8 ;;
-esac
-
-## Locale
-# export LC_ALL=
-
-
-## Golang
-export GOPATH=$HOME/go
-export PATH=$PATH:$GOPATH/bin
-
-
-## Neovim
-export XDG_CONFIG_HOME="$HOME/.config"
-
-
-## anyenv
+## Set anyenv path
 if [ -d $HOME/.anyenv ] ; then
     export PATH="$HOME/.anyenv/bin:$PATH"
     eval "$(anyenv init -)"
@@ -82,12 +84,17 @@ if [ -d $HOME/.anyenv ] ; then
 fi
 
 
-## prompt
-export PS1='\[\e[1;37m\]\w\[\e[00m\]$ '
+## Set go lang path
+if type "go" > /dev/null 2>&1; then
+    export GOPATH=$HOME/go
+    export PATH=$PATH:$GOPATH/bin
+fi
 
 
-## alias
-case $OS_TYPE in
-    mac) alias ls='ls -G' ;;
-    linux) alias ls='ls --group-directories-first --color=always' ;;
-esac
+## Execute fish shell if possible
+if [ ! $TERM = "linux" ] && type "fish" > /dev/null 2>&1; then
+    case $- in
+        *i*) exec fish;;
+        *) return;;
+    esac
+fi

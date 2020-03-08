@@ -1,5 +1,6 @@
 # ~/.config/fish/config.fish
 
+# Change locale depending on environment
 switch $TERM
     case linux
         set -x LANG C
@@ -7,36 +8,53 @@ switch $TERM
         set -x LANG ja_JP.UTF-8
 end
 
-## peco
-function fish_user_key_bindings
-  bind \cr 'peco_select_history (commandline -b)'
+
+# Enable sbin
+if test -d /usr/local/sbin
+    set -x PATH /usr/local/sbin $PATH
 end
 
-## go
-set -x GOPATH $HOME/go
-set -x PATH $PATH $GOPATH/bin
 
-## neovim
-if type "nvim" > /dev/null 2>&1
+# Enable local bin
+if test -d $HOME/.local/bin
+    set -x PATH $HOME/.local/bin $PATH
+end
+
+
+# Set XDG_CONFIG_HOME
+if set -q XDG_CONFIG_HOME ;and test -d $HOME/.config
     set -x XDG_CONFIG_HOME $HOME/.config
 end
 
+# User specific aliases and functions
+## theme: oh-my-fish/theme-bobthefish
+set -g theme_color_scheme dracula
+
+## peco
+if type -q peco
+    function fish_user_key_bindings
+        bind \cr 'peco_select_history (commandline -b)'
+    end
+end
+
 ## anyenv
-if type "anyenv" > /dev/null 2>&1
+if type -q anyenv
     set -x PATH $HOME/.anyenv/bin $PATH
     eval (anyenv init - | source)
 end
 
+## go
+if type -q go
+    set -x GOPATH $HOME/go
+    set -x PATH $PATH $GOPATH/bin
+end
+
+## latex
+if test -d /usr/local/opt/texinfo/bin
+    set -x PATH /usr/local/opt/texinfo/bin $PATH
+end
+
 ## openframeworks
-set -x OF_ROOT /usr/local/lib/openframeworks/0.10.1
-
-## python
-alias pip-upgrade-all 'pip freeze --local | grep -v "^\-e" | cut -d = -f 1 | xargs pip install -U'
-
-## ~/.local/bin
-set -x PATH $HOME/.local/bin $PATH
-set -g fish_user_paths "/usr/local/sbin" $fish_user_paths
-set -g fish_user_paths "/usr/local/opt/texinfo/bin" $fish_user_paths
-
-## oh-my-fish/theme-bobthefish
-set -g theme_color_scheme dracula
+if test -d /usr/local/lib/openframeworks/0.10.1
+    set -x OF_ROOT /usr/local/lib/openframeworks/0.10.1
+end
