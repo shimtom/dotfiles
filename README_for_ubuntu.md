@@ -104,7 +104,7 @@ ln -s -f ${DOTFILES}/powerline/themes ~/.config/powerline/themes
 sudo apt update
 sudo apt install -y tmux
 # config tmux
-mkdir -p ~/.config/tmux/bin/
+mkdir -p ~/.config/tmux/
 ln -s -f ${DOTFILES}/tmux/tmux.conf ~/.tmux.conf
 ln -s -f ${DOTFILES}/tmux/bin ~/.config/tmux/bin
 ```
