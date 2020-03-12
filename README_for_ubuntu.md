@@ -19,7 +19,7 @@ Install my dotfiles and dependencies.
 ### set `DOTFILES` environment variable that indicate `dotfiles/` path
 
 ```bash
-export DOTFILES /path/to/dotfiles
+export DOTFILES ~/dotfiles
 ```
 
 ### package manager (apt)
@@ -80,7 +80,8 @@ sudo apt install -y peco
 ### powerline
 
 ```bash
-# install powerline with dependencies
+# install powerline with pipx
+# pipx is installed by system pip3
 sudo apt install -y python3-pip python3-venv
 pip3 install pipx
 pipx install powerline-status
