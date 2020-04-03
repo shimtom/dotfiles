@@ -3,26 +3,17 @@
 Install my dotfiles and dependencies.
 
 ## Feature
-* package manager (apt)
 * bash
 * fish
 * peco
 * tmux
 * vim
 * git
-* imagemagick
-* ffmpeg
 * python
 * latex
 
 ## Set up
-### set `DOTFILES` environment variable that indicate `dotfiles/` path
-
-```bash
-export DOTFILES ~/dotfiles
-```
-
-### package manager (apt)
+### prepare
 
 ```bash
 sudo apt update
@@ -30,6 +21,7 @@ sudo apt upgrade -y
 sudo apt full-upgrade -y
 sudo apt autoremove -y
 sudo apt clean -y
+export DOTFILES ~/dotfiles
 ```
 
 ### git
@@ -103,7 +95,7 @@ ln -s -f ${DOTFILES}/powerline/themes ~/.config/powerline/themes
 ```bash
 # install tmux
 sudo apt update
-sudo apt install -y tmux
+sudo apt install -y xclip tmux
 # config tmux
 mkdir -p ~/.config/tmux/
 ln -s -f ${DOTFILES}/tmux/tmux.conf ~/.tmux.conf
