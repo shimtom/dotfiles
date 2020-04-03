@@ -1,8 +1,9 @@
-# Dotfiles for ubuntu
+# Dotfiles for mac
 
-Install dotfiles and dependencies for ubuntu.
+Install dotfiles and dependencies for mac.
 
 ## Feature
+* brew
 * bash
 * fish
 * git
@@ -14,18 +15,22 @@ Install dotfiles and dependencies for ubuntu.
 * vim
 * latex
 
+
 ## Set up
 ### prepare
 
 ```bash
-sudo apt update
-sudo apt upgrade -y
-sudo apt full-upgrade -y
-sudo apt autoremove -y
-sudo apt clean -y
 export DOTFILES ~/dotfiles
 ```
 
+### brew
+
+```bash
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+brew tap caskroom/cask
+brew update && brew upgrade
+export DOTFILES ~/dotfiles
+```
 
 ### bash
 
@@ -35,13 +40,12 @@ ln -s -f ${DOTFILES}/bash/bash_profile ~/.bash_profile
 ln -s -f ${DOTFILES}/bash/bash_logout ~/.bash_logout
 ```
 
-
 ### fish
+depend on `brew`
 
 ```bash
 # install fish shell
-sudo apt update
-sudo apt install -y fish curl
+brew install fish curl
 # config fish
 mkdir -p ~/.config/fish
 mkdir -p ~/.config/fish/functions
@@ -55,11 +59,11 @@ fisher add oh-my-fish/theme-bobthefish
 
 
 ### git
+depend on `brew`
 
 ```bash
 # install git
-sudo apt update
-sudo apt install -y git
+brew install git
 # just copy because `.gitconfig` needs user setting
 cp -f ${DOTFILES}/git/gitignore_global ~/.gitignore_global
 # link other config files
@@ -67,46 +71,45 @@ ln -s -f ${DOTFILES}/git/gitignore_global ~/.gitignore_global
 ln -s -f ${DOTFILES}/git/gitmessage ~/.gitmessage
 ```
 
-
 ### peco
+depend on `brew`
 
 ```bash
-sudo apt update
-sudo apt install -y peco
+brew install peco
 ```
 
 
 ### anyenv
-depend on `git`
+depend on `brew` and `git`
 
 ```bash
-git clone https://github.com/riywo/anyenv ~/.anyenv
+brew install anyenv
 ~/.anyenv/bin/anyenv init
 mkdir -p $(~/.anyenv/bin/anyenv root)/plugins
-git clone https://github.com/znz/anyenv-update.git $(~/.anyenv/bin/anyenv root)/plugins/anyenv-update
+git clone https://github.com/znz/anyenv-update.git $(anyenv root)/plugins/anyenv-update
 ```
 
 
 ### python
-depend on `anyenv`
+depend on `brew` and `anyenv`
 
 ```bash
-sudo apt update
-sudo apt install -y python3 python3-pip python3-venv pipenv
+brew install python3 pipenv
 # install pipx for global packages
 pip3 install pipx
 # install pyenv for pipenv
-~/.anyenv/bin/anyenv install pyenv
+anyenv install pyenv
 ```
 
 
 ### powerline
-depend on `python`
+depend on `brew` and `python`
 
 ```bash
 # install powerline with pipx
 pipx install powerline-status
 # install powerline-fonts
+brew install wget
 wget https://github.com/mzyy94/RictyDiminished-for-Powerline/archive/3.2.4-powerline-early-2016.zip -O /tmp/ricty.zip
 unzip ricty.zip
 mv /tmp/RictyDiminished-for-Powerline-3.2.4-powerline-early-2016/*.ttf ~/.local/share/fonts
@@ -121,11 +124,11 @@ ln -s -f ${DOTFILES}/powerline/themes ~/.config/powerline/themes
 
 
 ### tmux
+depend on `brew`
 
 ```bash
 # install tmux
-sudo apt update
-sudo apt install -y xclip tmux
+brew install tmux reattach-to-user-namespace
 # config tmux
 mkdir -p ~/.config/tmux/
 ln -s -f ${DOTFILES}/tmux/tmux.conf ~/.tmux.conf
@@ -134,25 +137,27 @@ ln -s -f ${DOTFILES}/tmux/bin ~/.config/tmux/bin
 
 
 ### vim
+depend on `brew`
 
 ```bash
 # install neovim
-sudo apt update
-sudo apt install -y neovim
+brew install neovim
 ```
 
+
 ### latex
+depend on `brew`
 
 ```bash
 # install latex
-sudo apt update
-sudo apt install -y texlive-full ghostscript evince
+brew cask install basictex
+brew install ghostscript
 # install tex packages
-tlmgr update --self --all
-tlmgr install collection-langjapanese latexmk texdoc latexindent \
+sudo tlmgr update --self --all
+sudo tlmgr install collection-langjapanese latexmk texdoc latexindent \
     chktex cite siunitx helvetic courier fontaxes boondox txfonts \
     kastrup tex-gyre newtx preprint
 # config
-tlmgr paper a4
+sudo tlmgr paper a4
 ln -s -f ${DOTFILES}/latexmkrc ~/.latexmkrc
 ```
