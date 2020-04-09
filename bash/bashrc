@@ -87,9 +87,9 @@ fi
 
 
 ## Execute fish shell if possible
-if [ ! $TERM = "linux" ] && type "fish" > /dev/null 2>&1; then
-    case $- in
-        *i*) exec fish;;
-        *) return;;
-    esac
-fi
+# if [ ! $TERM = "linux" ] && type "fish" > /dev/null 2>&1; then
+#     case $- in
+#         *i*) exec fish;;
+#         *) return;;
+#     esac
+# fi
