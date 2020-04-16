@@ -42,8 +42,6 @@ if type "brew" > /dev/null 2>&1; then
   brew-cask-upgrade(){ for app in $(brew cask list); do local latest="$(brew cask info "${app}" | awk 'NR==1{print $2}')"; local versions=($(ls -1 "/usr/local/Caskroom/${app}/.metadata/")); local current=$(echo ${versions} | awk '{print $NF}'); if [[ "${latest}" = "latest" ]]; then echo "[!] ${app}: ${current} == ${latest}"; [[ "$1" = "-f" ]] && brew cask install "${app}" --force; continue; elif [[ "${current}" = "${latest}" ]]; then continue; fi; echo "[+] ${app}: ${current} -> ${latest}"; brew cask uninstall "${app}" --force; brew cask install "${app}"; done; }
 fi
 
-## launch powerline
-#. /Users/Tomoshige/.anyenv/envs/pyenv/versions/3.6.6/lib/python3.6/site-packages/powerline/bindings/zsh/powerline.zsh
 
 ## launch tmux
 if [[ -z "$TMUX" ]]; then
