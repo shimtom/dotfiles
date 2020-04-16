@@ -2,10 +2,12 @@
 
 Install dotfiles and dependencies for ubuntu.
 
+
 ## Feature
 * bash
 * fish
 * git
+* direnv
 * peco
 * anyenv
 * python
@@ -13,6 +15,7 @@ Install dotfiles and dependencies for ubuntu.
 * tmux
 * vim
 * latex
+
 
 ## Set up
 ### prepare
@@ -59,12 +62,20 @@ fisher add oh-my-fish/theme-bobthefish
 ```bash
 # install git
 sudo apt update
-sudo apt install -y git
+sudo apt install -y git git-lfs
 # just copy because `.gitconfig` needs user setting
 cp -f ${DOTFILES}/git/gitignore_global ~/.gitignore_global
 # link other config files
 ln -s -f ${DOTFILES}/git/gitignore_global ~/.gitignore_global
 ln -s -f ${DOTFILES}/git/gitmessage ~/.gitmessage
+```
+
+
+### direnv
+
+```bash
+sudo apt update
+sudo apt install -y direnv
 ```
 
 
@@ -92,11 +103,14 @@ depend on `anyenv`
 
 ```bash
 sudo apt update
-sudo apt install -y python3 python3-pip python3-venv pipenv
+sudo apt install -y python3 python3-pip python3-venv
 # install pipx for global packages
 pip3 install pipx
-# install pyenv for pipenv
+# install pyenv
 ~/.anyenv/bin/anyenv install pyenv
+# install poetry
+pipx install poetry
+poetry config virtualenvs.in-project true
 ```
 
 

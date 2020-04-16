@@ -31,6 +31,11 @@ end
 ## theme: oh-my-fish/theme-bobthefish
 set -g theme_color_scheme dracula
 
+## direnv
+if type -q direnv
+    eval (direnv hook fish)
+end
+
 ## peco
 if type -q peco; and not type -q fish_user_key_bindings
     function fish_user_key_bindings
@@ -46,20 +51,15 @@ if not type -q anyenv ;and test -d $HOME/.anyenv
     eval (anyenv init - | source)
 end
 
+## latex
+if test -d /usr/local/opt/texinfo/bin
+    set -x PATH /usr/local/opt/texinfo/bin $PATH
+end
+
 ## go
 if type -q go; and test -d $HOME/go
     set -x GOPATH $HOME/go
     set -x PATH $PATH $GOPATH/bin
-end
-
-## pipenv
-if type -q pipenv
-    set -x PIPENV_VENV_IN_PROJECT true
-end
-
-## latex
-if test -d /usr/local/opt/texinfo/bin
-    set -x PATH /usr/local/opt/texinfo/bin $PATH
 end
 
 ## openframeworks

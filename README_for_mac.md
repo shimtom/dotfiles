@@ -2,11 +2,13 @@
 
 Install dotfiles and dependencies for mac.
 
+
 ## Feature
 * brew
 * bash
 * fish
 * git
+* direnv
 * peco
 * anyenv
 * python
@@ -23,6 +25,7 @@ Install dotfiles and dependencies for mac.
 export DOTFILES ~/dotfiles
 ```
 
+
 ### brew
 
 ```bash
@@ -32,6 +35,7 @@ brew update && brew upgrade
 export DOTFILES ~/dotfiles
 ```
 
+
 ### bash
 
 ```bash
@@ -39,6 +43,7 @@ ln -s -f ${DOTFILES}/bash/bashrc ~/.bashrc
 ln -s -f ${DOTFILES}/bash/bash_profile ~/.bash_profile
 ln -s -f ${DOTFILES}/bash/bash_logout ~/.bash_logout
 ```
+
 
 ### fish
 depend on `brew`
@@ -63,13 +68,22 @@ depend on `brew`
 
 ```bash
 # install git
-brew install git
+brew install git git-lfs
 # just copy because `.gitconfig` needs user setting
 cp -f ${DOTFILES}/git/gitignore_global ~/.gitignore_global
 # link other config files
 ln -s -f ${DOTFILES}/git/gitignore_global ~/.gitignore_global
 ln -s -f ${DOTFILES}/git/gitmessage ~/.gitmessage
 ```
+
+
+## direnv
+depend on `brew`
+
+```bash
+brew install direnv
+```
+
 
 ### peco
 depend on `brew`
@@ -94,11 +108,14 @@ git clone https://github.com/znz/anyenv-update.git $(anyenv root)/plugins/anyenv
 depend on `brew` and `anyenv`
 
 ```bash
-brew install python3 pipenv
+brew install python3
 # install pipx for global packages
 pip3 install pipx
-# install pyenv for pipenv
+# install pyenv
 anyenv install pyenv
+# install poetry
+pipx install poetry
+poetry config virtualenvs.in-project true
 ```
 
 
