@@ -44,7 +44,7 @@ if type -q peco; and not type -q fish_user_key_bindings
 end
 
 ## anyenv
-if not type -q anyenv ;and test -d $HOME/.anyenv
+if type -q anyenv ;and test -d $HOME/.anyenv
     if not contains $HOME/.anyenv/bin $PATH
         set -x PATH $HOME/.anyenv/bin $PATH
     end
