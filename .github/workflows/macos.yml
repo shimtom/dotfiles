@@ -8,6 +8,12 @@ jobs:
   macos_test:
     runs-on: macos-latest
     steps:
+      - name: Debug
+        run: pwd
+      - name: Debug
+        run: ls -l
+      - name: Debug
+        run: ./install.sh minimum
       - name: Run install.sh minimum
         run: install.sh minimum
       - name: Run install.sh link
