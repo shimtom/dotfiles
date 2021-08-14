@@ -3,6 +3,7 @@ name: macos
 on:
   push:
     branches: [ master ]
+    paths: [ install.sh ]
 
 jobs:
   macos_test_minimum:
