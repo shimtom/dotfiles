@@ -43,6 +43,7 @@ setup_bash() {
         else
             info "Creating symlink for $file"
             ln -s "$file" "$target"
+        fi
     done
 }
 
@@ -60,7 +61,7 @@ setup_config() {
     for config in $(find -H "$DOTFILES/config" -depth 1); do
         target="$XDG_CONFIG_HOME/$(basename "$config")"
         if [ -e "$target" ]; then
-            info "~${target#$XDG_CONFIG_HOME} already exists... Skipping"
+            info '$XDG_CONFIG_HOME'"${target#$XDG_CONFIG_HOME} already exists... Skipping"
         else
             info "Creating symlink for $config"
             ln -s "$config" "$target"
@@ -77,8 +78,8 @@ setup_git() {
     read -rp "Name [$defaultName]: " name
     read -rp "Email [$defaultEmail]: " email
 
-    git config -f ~/.gitconfig-local user.name "${name:-$defaultName}"
-    git config -f ~/.gitconfig-local user.email "${email:-$defaultEmail}"
+    git config -f ~/.gitconfig_local user.name "${name:-$defaultName}"
+    git config -f ~/.gitconfig_local user.email "${email:-$defaultEmail}"
 
     if [[ "$(uname)" == "Darwin" ]]; then
         git config --global credential.helper "osxkeychain"
@@ -103,6 +104,7 @@ case "$1" in
         ;;
     git)
         setup_git
+        ;;
     all)
         setup_bash
         setup_config
