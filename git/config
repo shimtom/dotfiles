@@ -9,7 +9,7 @@
   # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
   trustctime = false
 [commit]
-  template = ~/.gitmessage
+  template = $XDG_CONFIG_HOME/.config/git/message
 [merge]
   ff = false
 [pull]
