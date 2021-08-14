@@ -11,11 +11,9 @@ jobs:
       - name: Debug
         run: pwd
       - name: Debug
-        run: ls -l
-      - name: Debug
-        run: ./install.sh minimum
+        run: test -e install.sh
       - name: Run install.sh minimum
-        run: install.sh minimum
+        run: ./install.sh minimum
       - name: Run install.sh link
         run: install.sh link
       - name: Run install.sh git
