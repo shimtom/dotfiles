@@ -9,10 +9,10 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Run install.sh minimum
-        run: ${GITHUB_WORKSPACE}/install.sh minimum
+        run: install.sh minimum
       - name: Run install.sh link
-        run: ${GITHUB_WORKSPACE}/install.sh link
+        run: install.sh link
       - name: Run install.sh git
-        run: ${GITHUB_WORKSPACE}/install.sh git
+        run: install.sh git
       - name: Run install.sh all
-        run: ${GITHUB_WORKSPACE}/install.sh all
+        run: install.sh all
