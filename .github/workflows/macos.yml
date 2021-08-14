@@ -1,19 +1,39 @@
-name: install script test
+name: macos
 
 on:
   push:
     branches: [ master ]
 
 jobs:
-  macos_test:
+  macos_test_minimum:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - name: Run install.sh minimum
         run: ./install.sh minimum
+      - name: Load .bash_profile
+        run: |
+          bash ~/.bash_profile 2> error.log; cat error.log
+          if [ -s error.log ]; then false; fi
+      - name: Load .bashrc
+        run: |
+          bash ~/.bashrc 2> error.log; cat error.log
+          if [ -s error.log ]; then false; f
+  macos_test_link:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
       - name: Run install.sh link
         run: ./install.sh link
+  macos_test_git:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
       - name: Run install.sh git
         run: ./install.sh git
+  macos_test_all:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
       - name: Run install.sh all
         run: ./install.sh all
