@@ -1,0 +1,18 @@
+name: install script test
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  macos_test:
+    runs-on: macos-latest
+    steps:
+      - name: Run install.sh minimum
+        run: ${GITHUB_WORKSPACE}/install.sh minimum
+      - name: Run install.sh link
+        run: ${GITHUB_WORKSPACE}/install.sh link
+      - name: Run install.sh git
+        run: ${GITHUB_WORKSPACE}/install.sh git
+      - name: Run install.sh all
+        run: ${GITHUB_WORKSPACE}/install.sh all
