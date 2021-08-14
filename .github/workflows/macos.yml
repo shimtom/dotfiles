@@ -18,7 +18,7 @@ jobs:
       - name: Load .bashrc
         run: |
           bash ~/.bashrc 2> error.log; cat error.log
-          if [ -s error.log ]; then false; f
+          if [ -s error.log ]; then false; fi
   macos_test_link:
     runs-on: macos-latest
     steps:
