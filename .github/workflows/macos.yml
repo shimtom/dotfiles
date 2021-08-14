@@ -8,10 +8,7 @@ jobs:
   macos_test:
     runs-on: macos-latest
     steps:
-      - name: Debug
-        run: pwd
-      - name: Debug
-        run: test -e install.sh
+      - uses: actions/checkout@v2
       - name: Run install.sh minimum
         run: ./install.sh minimum
       - name: Run install.sh link
