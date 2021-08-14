@@ -1,0 +1,47 @@
+[include]
+  # A local gitconfig, outside of version control.
+  # If the file doesn't exist it is silently ignored
+  path = ~/.gitconfig_local
+[core]
+  autocrlf = input
+  excludesfile = ~/.gitignore_global
+  # Make `git rebase` safer on macOS
+  # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
+  trustctime = false
+[commit]
+  template = $XDG_CONFIG_HOME/.config/git/message
+[merge]
+  ff = false
+[pull]
+  ff = only
+[alias]
+  graph = log --graph --date-order --all --pretty=format:'%h %Cred%d %Cgreen%ad %Cblue%cn %Creset%s' --date=short
+  undo = reset --soft HEAD~1
+  amend = commit -a --amend
+[pager]
+  diff = delta
+  log = delta
+  reflog = delta
+  show = delta
+[interactive]
+    diffFilter = delta --color-only --features=interactive
+[delta]
+    features = decorations
+[color]
+  ui = true
+[color "branch"]
+  current = blue
+  remote = red
+[color "diff"]
+  commit = yellow
+  meta = yellow
+  frag = bold cyan
+  func = bold
+  whitespace = reverse red
+  old = red
+  new = green
+[color "status"]
+  added = bold
+  changed = yellow
+  untracked = green
+  branch = blue
