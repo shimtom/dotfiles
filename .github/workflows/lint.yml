@@ -16,14 +16,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Check bashrc
-        env:
-          EXCLUDE_OPTS: SC1090 SC2148
-        run: shellcheck bash/bashrc
+        run: shellcheck -e SC1091 SC2148 bash/bashrc
       - name: Check bash_profile
-        env:
-          EXCLUDE_OPTS: SC1090 SC2148
-        run: shellcheck bash/bash_profile
+        run: shellcheck -e SC1090 SC2148 bash/bash_profile
       - name: Check bash_logout
-        env:
-          EXCLUDE_OPTS: SC1090 SC2148
-        run: shellcheck bash/bash_logout
+        run: shellcheck -e SC1090 SC2148 bash/bash_logout
