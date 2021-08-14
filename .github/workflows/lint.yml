@@ -1,0 +1,25 @@
+name: macos
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  macos_test_minimum:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Check install.sh
+        run: shellcheck install.sh
+      - name: Check bashrc
+        env:
+          EXCLUDE_OPTS: SC1090 SC2148
+        run: shellcheck bash/bashrc
+      - name: Check bash_profile
+        env:
+          EXCLUDE_OPTS: SC1090 SC2148
+        run: shellcheck bash/bash_profile
+      - name: Check bash_logout
+        env:
+          EXCLUDE_OPTS: SC1090 SC2148
+        run: shellcheck bash/bash_logout
