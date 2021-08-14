@@ -58,15 +58,17 @@ setup_config() {
         mkdir -p "$XDG_CONFIG_HOME"
     fi
 
-    for config in $(find -H "$DOTFILES/config" -depth 1); do
+    while IFS= read -r -d '' config; do
         target="$XDG_CONFIG_HOME/$(basename "$config")"
         if [ -e "$target" ]; then
+            # shellcheck disable=SC2016
             info '$XDG_CONFIG_HOME'"${target#$XDG_CONFIG_HOME} already exists... Skipping"
         else
             info "Creating symlink for $config"
-            ln -s "$config" "$target"
+            # ln -s "$config" "$target"
+            echo "$config" "$target"
         fi
-    done
+    done <   <(find -H "./config" -depth 1 -print0)
 }
 
 setup_git() {
