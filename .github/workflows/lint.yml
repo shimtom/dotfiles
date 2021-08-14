@@ -1,16 +1,20 @@
-name: macos
+name: lint
 
 on:
   push:
     branches: [ master ]
 
 jobs:
-  macos_test_minimum:
+  lint_install_script:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Check install.sh
         run: shellcheck install.sh
+  lint_config:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
       - name: Check bashrc
         env:
           EXCLUDE_OPTS: SC1090 SC2148
