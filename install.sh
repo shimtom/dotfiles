@@ -52,7 +52,7 @@ setup_config() {
 
     XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-~/.config}
 
-    info "installing to $XDG_CONFIG_HOME"
+    info "Installing to $XDG_CONFIG_HOME"
     if [ ! -d "$XDG_CONFIG_HOME" ]; then
         info "Creating $XDG_CONFIG_HOME"
         mkdir -p "$XDG_CONFIG_HOME"

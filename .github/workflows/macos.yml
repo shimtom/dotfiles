@@ -3,7 +3,10 @@ name: macos
 on:
   push:
     branches: [ master ]
-    paths: [ install.sh ]
+    paths:
+      - install.sh
+      - .github/workflows/macos.yml
+  workflow_dispatch:
 
 jobs:
   macos_test_minimum:
@@ -26,15 +29,3 @@ jobs:
       - uses: actions/checkout@v2
       - name: Run install.sh link
         run: ./install.sh link
-  macos_test_git:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run install.sh git
-        run: ./install.sh git
-  macos_test_all:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run install.sh all
-        run: ./install.sh all
