@@ -21,7 +21,8 @@ jobs:
           test ! -s error.log
       - name: Load .bashrc
         run: |
-          bash ~/.bashrc
+          bash ~/.bashrc 2> error.log; cat error.log
+          if [ -s error.log ]; then false; fi
   linux_test_link:
     runs-on: ubuntu-latest
     steps:
