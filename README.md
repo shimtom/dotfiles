@@ -71,17 +71,21 @@ sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 
 # install commands
-sudo apt install bat fd-find fzf hexyl peco ripgrep tree
+sudo apt install bat fd-find fzf peco ripgrep tree unzip
+# see https://github.com/sharkdp/bat/issues/938
+sudo apt install -o Dpkg::Options::="--force-overwrite" hexyl ripgrep
 # bat
 sudo ln -sf /usr/bin/batcat /usr/local/bin/bat
 # exa
 EXA_VERSION=0.10.1
-wget "https://github.com/ogham/exa/releases/download/v${EXA_VERSION}/exa-linux-x86_64-${EXA_VERSION}.zip"
-unzip exa-linux-x86_64-"$EXA_VERSION".zip
-sudo chown -R root:root exa-linux-x86_64 man
-sudo mv -f exa-linux-x86_64 /usr/local/bin/exa
+wget "https://github.com/ogham/exa/releases/download/v${EXA_VERSION}/exa-linux-x86_64-v${EXA_VERSION}.zip"
+unzip exa-linux-x86_64-v"$EXA_VERSION".zip
+sudo chown -R root:root exa-linux-x86_64 man completions
+sudo mv -f bin/exa /usr/local/bin/exa
 sudo mv -f man/* /usr/share/man/man1/
-rm -rf exa-linux-x86_64-"$EXA_VERSION".zip man
+sudo mv -f completions/exa.bash /etc/bash_completion.d/
+sudo mv -f completions/exa.fish /usr/share/fish/vendor_completions.d/
+rm -rf exa-linux-x86_64-v"$EXA_VERSION".zip man completions
 unset EXA_VERSION
 # delta
 DELTA_VERSION=0.8.3
