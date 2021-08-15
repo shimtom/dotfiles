@@ -3,7 +3,10 @@ name: lint
 on:
   push:
     branches: [ master ]
-    paths: [ install.sh ]
+    paths:
+      - install.sh
+      - .github/workflows/lint.yml
+  workflow_dispatch:
 
 jobs:
   lint_install_script:
