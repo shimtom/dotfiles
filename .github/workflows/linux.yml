@@ -1,0 +1,31 @@
+name: linux
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - install.sh
+      - .github/workflows/linux.yml
+  workflow_dispatch:
+
+jobs:
+  linux_test_minimum:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run install.sh minimum
+        run: ./install.sh minimum
+      - name: Load .bash_profile
+        run: |
+          bash ~/.bash_profile 2> error.log; cat error.log
+          if [ -s error.log ]; then false; fi
+      - name: Load .bashrc
+        run: |
+          bash ~/.bashrc 2> error.log; cat error.log
+          if [ -s error.log ]; then false; fi
+  linux_test_link:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run install.sh link
+        run: ./install.sh link
