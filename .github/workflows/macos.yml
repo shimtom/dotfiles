@@ -9,6 +9,12 @@ on:
   workflow_dispatch:
 
 jobs:
+  macos_test_backup:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run install.sh backup
+        run: ./install.sh backup
   macos_test_minimum:
     runs-on: macos-latest
     steps:
