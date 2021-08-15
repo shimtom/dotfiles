@@ -12,12 +12,12 @@ if [ -d /usr/local/sbin ]; then
 fi
 
 # Enable local bin
-if [ -d $HOME/.local/bin ]; then
+if [ -d "$HOME/.local/bin" ]; then
     export PATH="$HOME/.local/bin:$PATH"
 fi
 
 # Set XDG_CONFIG_HOME
-if [ "${XDG_CONFIG_HOME+foo}" ] && [ -d $HOME/.config ]; then
+if [ "${XDG_CONFIG_HOME:+foo}" ] && [ -d "$HOME/.config" ]; then
     export XDG_CONFIG_HOME="$HOME/.config"
 fi
 
