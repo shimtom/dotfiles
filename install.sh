@@ -38,12 +38,8 @@ setup_bash() {
 
     for file in "$DOTFILES/bash/bashrc" "$DOTFILES/bash/bash_profile" "$DOTFILES/bash/bash_logout"; do
         target="$HOME/.$(basename "$file")"
-        if [ -e "$target" ]; then
-            info "~${target#$HOME} already exists... Skipping"
-        else
-            info "Creating symlink for $file"
-            ln -s "$file" "$target"
-        fi
+        info "Creating symlink for $file"
+        ln -sf "$file" "$target"
     done
 }
 
@@ -60,14 +56,8 @@ setup_config() {
 
     while IFS= read -r -d '' config; do
         target="$XDG_CONFIG_HOME/$(basename "$config")"
-        if [ -e "$target" ]; then
-            # shellcheck disable=SC2016
-            info '$XDG_CONFIG_HOME'"${target#$XDG_CONFIG_HOME} already exists... Skipping"
-        else
-            info "Creating symlink for $config"
-            # ln -s "$config" "$target"
-            echo "$config" "$target"
-        fi
+        info "Creating symlink for $config"
+        ln -sf "$config" "$target"
     done <   <(find -H "./config" -depth 1 -print0)
 }
 
@@ -95,8 +85,46 @@ setup_git() {
     fi
 }
 
+backup() {
+    BACKUP_DIR=$HOME/dotfiles-backup
+
+    echo "Creating backup directory at $BACKUP_DIR"
+    mkdir -p "$BACKUP_DIR" "$BACKUP_DIR/config"
+
+    # backup bash
+    for file in "$DOTFILES/bash/bashrc" "$DOTFILES/bash/bash_profile" "$DOTFILES/bash/bash_logout"; do
+        filename=".$(basename "$file")"
+        target="$HOME/$filename"
+        if [ -f "$target" ]; then
+            echo "backing up $filename"
+            cp "$target" "$BACKUP_DIR"
+        else
+            warning "$filename does not exist at this location or is a symlink"
+        fi
+    done
+
+    # backup xdg config
+    XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-~/.config}
+
+    while IFS= read -r -d '' config; do
+        config=$(basename "$config")
+        target="$XDG_CONFIG_HOME/$config"
+
+        if [ -f "$target" ] || [ -d "$target" ]; then
+            echo "backing up $config"
+            cp -rf "$target" "$BACKUP_DIR/config"
+        else
+            warning "$config does not exist at this location or is a symlink"
+        fi
+    done <   <(find -H "./config" -depth 1 -print0)
+
+}
+
 
 case "$1" in
+    backup)
+        backup
+        ;;
     minimum)
         setup_bash
         ;;
@@ -108,12 +136,13 @@ case "$1" in
         setup_git
         ;;
     all)
+        backup
         setup_bash
         setup_config
         setup_git
         ;;
     *)
-        echo -e $"\nUsage: $(basename "$0") {minimum|link|git|all}\n"
+        echo -e $"\nUsage: $(basename "$0") {backup|minimum|link|git|all}\n"
         exit 1
         ;;
 esac
