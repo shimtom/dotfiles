@@ -24,6 +24,9 @@ if not set -q XDG_CONFIG_HOME ;and test -d $HOME/.config
     set -x XDG_CONFIG_HOME $HOME/.config
 end
 
+if not set -q XDG_DATA_HOME ;and test -d $HOME/.local/share
+    set -x XDG_DATA_HOME $HOME/.local/share
+end
 
 # User specific aliases and functions
 ## terminal theme: dracula
