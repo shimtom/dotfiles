@@ -58,7 +58,7 @@ setup_config() {
         target="$XDG_CONFIG_HOME/$(basename "$config")"
         info "Creating symlink for $config"
         ln -sf "$config" "$target"
-    done <   <(find -H "./config" -depth 1 -print0)
+    done <   <(find -H "$DOTFILES/config" -depth 1 -print0)
 }
 
 setup_git() {
