@@ -57,6 +57,7 @@ setup_config() {
     while IFS= read -r -d '' config; do
         target="$XDG_CONFIG_HOME/$(basename "$config")"
         info "Creating symlink for $config"
+        rm -rf "$target"
         ln -sf "$config" "$target"
     done <   <(find -H "$DOTFILES/config" -mindepth 1 -maxdepth 1 -print0)
 }
