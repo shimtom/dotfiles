@@ -41,7 +41,8 @@ sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.
 brew install bat coreutils exa fd fzf git-delta hexyl peco procs ripgrep tree
 ```
 
-### Ubuntu 20.04
+### Ubuntu
+* Support: Ubuntu 20.04, 21.04
 
 ```bash
 # install hackgen fonts
@@ -68,22 +69,31 @@ sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 
 # install commands
-sudo apt install bat fd-find fzf peco ripgrep tree unzip
-# see https://github.com/sharkdp/bat/issues/938
-sudo apt install -o Dpkg::Options::="--force-overwrite" hexyl ripgrep
-# bat
-sudo ln -sf /usr/bin/batcat /usr/local/bin/bat
+sudo apt install -y bat fd-find fzf peco ripgrep tree
+
+# bat, hexyl, ripgrep
+## Ubuntu 21.04
+sudo apt install -y hexyl ripgrep
+## Ubuntu 20.04
+# # see https://github.com/sharkdp/bat/issues/938
+# sudo apt install -o Dpkg::Options::="--force-overwrite" hexyl ripgrep
+
+sudo ln -sf $(which batcat) /usr/local/bin/bat
+sudo ln -sf $(which fdfind) /usr/local/bin/fd
 # exa
-EXA_VERSION=0.10.1
-wget "https://github.com/ogham/exa/releases/download/v${EXA_VERSION}/exa-linux-x86_64-v${EXA_VERSION}.zip"
-unzip exa-linux-x86_64-v"$EXA_VERSION".zip
-sudo chown -R root:root exa-linux-x86_64 man completions
-sudo mv -f bin/exa /usr/local/bin/exa
-sudo mv -f man/* /usr/share/man/man1/
-sudo mv -f completions/exa.bash /etc/bash_completion.d/
-sudo mv -f completions/exa.fish /usr/share/fish/vendor_completions.d/
-rm -rf exa-linux-x86_64-v"$EXA_VERSION".zip man completions
-unset EXA_VERSION
+## Ubuntu 21.04
+sudo apt install -y exa
+## Ubuntu 20.04
+# url=$(curl -s https://api.github.com/repos/ogham/exa/releases/latest | grep -E "browser_download_url.*exa-linux-x86_64-v[0-9]+\.[0-9]+\.[0-9]+\.*\.zip" | cut -d : -f 2,3 | tr -d \")
+# wget $url
+# unzip $(basename $url) -d exa
+# sudo chown -R root:root exa
+# sudo mv -f exa/bin/exa /usr/local/bin/exa
+# sudo mv -f man/* /usr/share/man/man1/
+# sudo mv -f exa/completions/exa.bash /etc/bash_completion.d/
+# sudo mv -f exa/completions/exa.fish /usr/share/fish/vendor_completions.d/
+# rm -rf $(basename $url) exa
+
 # delta
 url=$(curl -s https://api.github.com/repos/dandavison/delta/releases/latest | grep -E "browser_download_url.*git-delta_[0-9]+\.[0-9]+\.[0-9]+_amd64\.deb" | cut -d : -f 2,3 | tr -d \")
 wget $url
