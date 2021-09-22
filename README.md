@@ -30,7 +30,7 @@ chsh -s /usr/local/bin/fish
 
 # install tmux
 brew install tmux reattach-to-user-namespace
-git clone https://github.com/tmux-plugins/tpm $XDG_CONFIG_HOME/tmux/plugins/tpm
+git clone https://github.com/tmux-plugins/tpm ${XDG_CONFIG_HOME:-$HOME/.config}/tmux/plugins/tpm
 
 # install neovim
 brew install neovim
@@ -62,6 +62,7 @@ chsh -s /usr/bin/fish
 
 # install tmux
 sudo apt install -y tmux
+git clone https://github.com/tmux-plugins/tpm ${XDG_CONFIG_HOME:-$HOME/.config}/tmux/plugins/tpm
 
 # install neovim
 sudo apt install -y neovim
