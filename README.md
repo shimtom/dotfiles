@@ -59,8 +59,7 @@ unset HACKGEN_VERSION
 sudo apt-add-repository ppa:fish-shell/release-3
 sudo apt update
 sudo apt install -y fish
-echo /usr/bin/fish | sudo tee -a /etc/shells
-chsh -s /usr/bin/ fish
+chsh -s /usr/bin/fish
 
 # install tmux
 sudo apt install -y tmux
