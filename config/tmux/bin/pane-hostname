@@ -1,0 +1,17 @@
+#!/bin/bash
+
+pane_current_command=$1
+pane_pid=$2
+pane_hostname=$(hostname)
+
+if [ $pane_current_command = 'ssh' ]; then
+    ssh_args=$(pgrep -af -P $pane_pid | xargs ps -o command -p | grep ssh | sed -E 's/.*ssh //')
+    ssh_info=$(ssh -G $ssh_args)
+    ssh_user=$(echo "$ssh_info" | grep -w user | sed 's/user //')
+    ssh_hostname=$(echo "$ssh_info" | grep -w hostname | sed 's/hostname //')
+    ssh_port=$(echo "$ssh_info" | grep -w port | sed 's/port //')
+
+    pane_hostname="$ssh_user@$ssh_hostname:$ssh_port"
+fi
+
+echo $pane_hostname
