@@ -25,6 +25,7 @@ brew install font-hackgen font-hackgen-nerd
 
 # install fish and fisher plugins
 brew install fish
+# using fish as default shell with .profile. cf. https://superuser.com/questions/446925/re-use-profile-for-fish
 cat <<EOF > /usr/local/bin/fishlogin
 #!/bin/bash -l
 exec -l fish "$@"
@@ -64,6 +65,7 @@ done
 sudo apt-add-repository ppa:fish-shell/release-3
 sudo apt update
 sudo apt install -y fish
+# using fish as default shell with .profile. cf. https://superuser.com/questions/446925/re-use-profile-for-fish
 sudo tee /usr/local/bin/fishlogin <<EOF
 #!/bin/bash -l
 exec -l fish "$@"
