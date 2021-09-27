@@ -4,8 +4,10 @@ on:
   push:
     branches: [ master ]
     paths:
-      - install.sh
       - .github/workflows/macos.yml
+      - install.sh
+      - sh/*
+      - bash/*
   workflow_dispatch:
 
 jobs:
