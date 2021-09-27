@@ -31,7 +31,7 @@ exec -l fish "$@"
 EOF
 sudo chmod a+rx /usr/local/bin/fishlogin
 echo /usr/local/bin/fishlogin | sudo tee -a /etc/shells
-chsh -s /usr/local/fishlogin $USER
+chsh -s /usr/local/bin/fishlogin $USER
 curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher
 fish -c "curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
 fisher update
@@ -66,13 +66,13 @@ done
 sudo apt-add-repository ppa:fish-shell/release-3
 sudo apt update
 sudo apt install -y fish
-sudo cat <<EOF > /usr/local/bin/fishlogin
+sudo tee /usr/local/bin/fishlogin <<EOF
 #!/bin/bash -l
 exec -l fish "$@"
 EOF
 sudo chmod a+rx /usr/local/bin/fishlogin
 echo /usr/local/bin/fishlogin | sudo tee -a /etc/shells
-chsh -s /usr/local/fishlogin $USER
+chsh -s /usr/local/bin/fishlogin $USER
 fish -c "curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
 fisher update
 
