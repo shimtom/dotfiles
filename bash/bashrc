@@ -3,34 +3,38 @@
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
-      *) return;;
+      *) if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+             return
+         else
+             exit 0
+         fi ;;
 esac
 
 
 # Enable bash completion
 if ! shopt -oq posix; then
-    if [ -f /usr/share/bash-completion/bash_completion ]; then
+    if [[ -f /usr/share/bash-completion/bash_completion ]]; then
         source /usr/share/bash-completion/bash_completion
-    elif [ -f /etc/bash_completion ]; then
+    elif [[ -f /etc/bash_completion ]]; then
         source /etc/bash_completion
-    elif [ -f /usr/local//etc/bash_completion ]; then
-        source /usr/local//etc/bash_completion
+    elif [[ -f /usr/local/etc/bash_completion ]]; then
+        source /usr/local/etc/bash_completion
     fi
 fi
 
 
 # Custom history
+# sync history immediately between all session
+export PROMPT_COMMAND="history -a; history -c; history -r"
 # don't put duplicate lines in the history
-HISTCONTROL=ignoredups
+export HISTCONTROL=ignoredups
 # for setting history length
-HISTSIZE=100000
-HISTFILESIZE=100000
+export HISTSIZE=100000
+export HISTFILESIZE=100000
 # attempt to save each line of a multi-line command in the same history entry
 shopt -s cmdhist
 # append to the history file, don't overwrite it
 shopt -u histappend
-# sync history immediately between all session
-export PROMPT_COMMAND="history -a; history -c; history -r"
 
 
 # Custom appearance

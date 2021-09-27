@@ -29,15 +29,15 @@ fi
 
 # Aliases
 if type "notify-send" > /dev/null 2>&1; then
-    alias notify="$(notify-send)"
-elif [ -x /usr/local/bin/terminal-notifier ]; then
-    alias notify="/usr/local/bin/terminal-notifier -sound default -message"
+    alias notify="notify-send"
+elif type "terminal-notifier" > /dev/null 2>&1; then
+    alias notify="terminal-notifier -sound default -message"
 fi
 
-# if running bash
-if [ -n "$BASH_VERSION" ]; then
-    # include .bashrc if it exists
-    if [ -f "$HOME/.bashrc" ]; then
-        source "$HOME/.bashrc"
-    fi
+# if running bash, include .bashrc if it exists
+if [ -n "$BASH_VERSION" ] && [ -f "$HOME/.bashrc" ]; then
+    source "$HOME/.bashrc"
 fi
+
+# finish with 0
+echo "" > /dev/null
