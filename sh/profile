@@ -28,11 +28,7 @@ if type "bat" > /dev/null 2>&1; then
 fi
 
 # Aliases
-if type "notify-send" > /dev/null 2>&1; then
-    alias notify="notify-send"
-elif type "terminal-notifier" > /dev/null 2>&1; then
-    alias notify="terminal-notifier -sound default -message"
-fi
+
 
 # if running bash, include .bashrc if it exists
 if [ -n "$BASH_VERSION" ] && [ -f "$HOME/.bashrc" ]; then
