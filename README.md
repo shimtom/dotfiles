@@ -32,6 +32,9 @@ EOF
 sudo chmod a+rx /usr/local/bin/fishlogin
 echo /usr/local/bin/fishlogin | sudo tee -a /etc/shells
 chsh -s /usr/local/fishlogin $USER
+curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher
+fish -c "curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
+fisher update
 
 # install tmux
 brew install tmux reattach-to-user-namespace
@@ -70,6 +73,8 @@ EOF
 sudo chmod a+rx /usr/local/bin/fishlogin
 echo /usr/local/bin/fishlogin | sudo tee -a /etc/shells
 chsh -s /usr/local/fishlogin $USER
+fish -c "curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
+fisher update
 
 # install tmux
 sudo apt install -y tmux
