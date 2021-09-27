@@ -45,7 +45,7 @@ sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 
 # install commands
-brew install bat coreutils exa fd fzf git-delta hexyl peco procs ripgrep tree
+brew install bat coreutils exa fd fzf git-delta hexyl noti peco procs ripgrep tree
 ```
 
 ### Ubuntu
@@ -123,4 +123,9 @@ unzip $(basename $url)
 sudo chown root:root procs
 sudo mv procs /usr/local/bin/procs
 rm $(basename $url)
+
+# noti
+curl -L $(curl -s https://api.github.com/repos/variadico/noti/releases/latest | awk '/browser_download_url/ { print $2 }' | grep 'linux-amd64' | sed 's/"//g') | tar -xz
+sudo chown root:root noti
+sudo mv noti /usr/local/bin/
 ```
