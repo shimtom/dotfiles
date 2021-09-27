@@ -25,8 +25,13 @@ brew install font-hackgen font-hackgen-nerd
 
 # install fish and fisher plugins
 brew install fish
-echo /usr/local/bin/fish | sudo tee -a /etc/shells
-chsh -s /usr/local/bin/fish
+cat <<EOF > /usr/local/bin/fishlogin
+#!/bin/bash -l
+exec -l fish "$@"
+EOF
+sudo chmod a+rx /usr/local/bin/fishlogin
+echo /usr/local/bin/fishlogin | sudo tee -a /etc/shells
+chsh -s /usr/local/fishlogin $USER
 
 # install tmux
 brew install tmux reattach-to-user-namespace
@@ -58,7 +63,13 @@ done
 sudo apt-add-repository ppa:fish-shell/release-3
 sudo apt update
 sudo apt install -y fish
-chsh -s /usr/bin/fish
+sudo cat <<EOF > /usr/local/bin/fishlogin
+#!/bin/bash -l
+exec -l fish "$@"
+EOF
+sudo chmod a+rx /usr/local/bin/fishlogin
+echo /usr/local/bin/fishlogin | sudo tee -a /etc/shells
+chsh -s /usr/local/fishlogin $USER
 
 # install tmux
 sudo apt install -y tmux
@@ -99,7 +110,7 @@ sudo apt install -y exa
 url=$(curl -s https://api.github.com/repos/dandavison/delta/releases/latest | grep -E "browser_download_url.*git-delta_[0-9]+\.[0-9]+\.[0-9]+_amd64\.deb" | cut -d : -f 2,3 | tr -d \")
 wget $url
 sudo dpkg -i $(basename $url)
-rm $(basename $url)
+rm -f $(basename $url)
 
 # procs
 url=$(curl -s https://api.github.com/repos/dalance/procs/releases/latest | grep -E "browser_download_url.*procs-v[0-9]+\.[0-9]+\.[0-9]+-x86_64-lnx\.zip" | cut -d : -f 2,3 | tr -d \")
@@ -107,4 +118,5 @@ wget $url
 unzip $(basename $url)
 sudo chown root:root procs
 sudo mv procs /usr/local/bin/procs
+rm $(basename $url)
 ```

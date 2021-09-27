@@ -33,10 +33,19 @@ success() {
     echo -e "${COLOR_GREEN}$1${COLOR_NONE}"
 }
 
+setup_sh() {
+    title "Setting up Sh"
+
+    $file="$DOTFILES/sh/profile"
+    target="$HOME/.$(basename "$file")"
+    info "Creating symlink for $file"
+    ln -sf "$file" "$target"
+}
+
 setup_bash() {
     title "Setting up Bash"
 
-    for file in "$DOTFILES/bash/bashrc" "$DOTFILES/bash/bash_profile" "$DOTFILES/bash/bash_logout"; do
+    for file in "$DOTFILES/bash/bashrc" "$DOTFILES/bash/bash_logout"; do
         target="$HOME/.$(basename "$file")"
         info "Creating symlink for $file"
         ln -sf "$file" "$target"
@@ -127,9 +136,11 @@ case "$1" in
         backup
         ;;
     minimum)
+        setup_sh
         setup_bash
         ;;
     link)
+        setup_sh
         setup_bash
         setup_config
         ;;
@@ -138,6 +149,7 @@ case "$1" in
         ;;
     all)
         backup
+        setup_sh
         setup_bash
         setup_config
         setup_git
