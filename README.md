@@ -76,7 +76,7 @@ chsh -s /usr/local/bin/fishlogin $USER
 fish -c "curl -sL https://git.io/fisher | source && fisher update"
 
 # install tmux
-sudo apt install -y tmux
+sudo apt install -y tmux xsel
 git clone https://github.com/tmux-plugins/tpm ${XDG_CONFIG_HOME:-$HOME/.config}/tmux/plugins/tpm
 
 # install neovim
