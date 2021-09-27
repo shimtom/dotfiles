@@ -36,7 +36,7 @@ success() {
 setup_sh() {
     title "Setting up Sh"
 
-    $file="$DOTFILES/sh/profile"
+    file="$DOTFILES/sh/profile"
     target="$HOME/.$(basename "$file")"
     info "Creating symlink for $file"
     ln -sf "$file" "$target"
