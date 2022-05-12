@@ -20,8 +20,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Check profile
-        run: shellcheck -e SC2148 -e SC1090 -e SC1091 sh/profile
+        run: shellcheck -e SC1090 -e SC1091 -e SC2148 sh/profile
       - name: Check bashrc
         run: shellcheck -e SC1090 -e SC1091 -e SC2148 bash/bashrc
       - name: Check bash_logout
-        run: shellcheck -e SC1090 -e SC1090 -e SC2148 bash/bash_logout
+        run: shellcheck -e SC1090 -e SC1091 -e SC2148 bash/bash_logout
