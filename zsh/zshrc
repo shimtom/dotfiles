@@ -1,0 +1,69 @@
+# ~/.zshrc
+
+# Enable zsh completion
+autoload -U compinit
+compinit
+
+
+# Custom history
+# sync history immediately between all session
+setopt share_history
+# don't put duplicate lines in the history
+setopt hist_ignore_dups
+# remove superfluous blank from each command line
+setopt hist_reduce_blanks
+# append to the history file, don't overwrite it
+setopt inc_append_history
+# set history length
+HISTSIZE=100000
+SAVEHIST=100000
+
+
+# Custom appearance
+# enable environmental variables in the prompt
+setopt prompt_subst
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+    xterm-color|*-256color) color_prompt=yes;;
+esac
+# set prompt
+# shellcheck disable=SC2154
+if [ "$color_prompt" = yes ]; then
+    PROMPT='${debian_chroot:+($debian_chroot)}%B%F{green}%n@%m%f%b:%B%F{blue}%(4~|%-2~/.../%1~|%~)%f%b$ '
+else
+    PROMPT='${debian_chroot:+($debian_chroot)}%n@%m:%(4~|%-2~/.../%1~|%~)$ '
+fi
+unset color_prompt
+
+
+# Enable color support of ls and also add handy aliases
+# shellcheck disable=SC2003
+if [ "$(uname)" = 'Darwin' ]; then
+    alias ls='ls -G'
+    alias grep='grep --color=auto'
+elif [ "$(expr substr "$(uname -s)" 1 5)" == 'Linux' ]; then
+    alias ls='ls --group-directories-first --color=auto'
+    alias dir='dir --color=auto'
+    alias vdir='vdir --color=auto'
+fi
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# Key bindings
+# peco
+if type "peco" > /dev/null 2>&1; then
+    peco_search_history() {
+        l=$(HISTTIMEFORMAT='' history | \
+            sort -r | \
+            sed -E s/^\ *[0-9]\+\ \+// | \
+            peco --query "$READLINE_LINE")
+        READLINE_LINE="$l"
+        READLINE_POINT=${#l}
+    }
+    bind -x '"\C-r": peco_search_history'
+fi
