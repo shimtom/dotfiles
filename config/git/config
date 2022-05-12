@@ -10,7 +10,7 @@
 [init]
   defaultBranch = main
 [commit]
-  template = $XDG_CONFIG_HOME/.config/git/message
+  template = ~/.config/git/message
 [merge]
   conflictstyle = diff3
   ff = false
