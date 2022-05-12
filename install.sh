@@ -52,6 +52,15 @@ setup_bash() {
     done
 }
 
+setup_zsh() {
+    title "Setting up Zsh"
+
+    file="$DOTFILES/zsh/zshrc"
+    target="$HOME/.$(basename "$file")"
+    info "Creating symlink for $file"
+    ln -sf "$file" "$target"
+}
+
 setup_config() {
     title "Setting up config"
 
@@ -142,6 +151,7 @@ case "$1" in
     link)
         setup_sh
         setup_bash
+        setup_zsh
         setup_config
         ;;
     git)
@@ -151,6 +161,7 @@ case "$1" in
         backup
         setup_sh
         setup_bash
+        setup_zsh
         setup_config
         setup_git
         ;;
