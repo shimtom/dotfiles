@@ -1,6 +1,5 @@
 # ~/.profile: executed by the command interpreter for login shells.
-# This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
-# exists.
+# This file is used by bash, zsh and fish shell in common.
 
 # the default umask is set in /etc/profile; for setting the umask
 # for ssh logins, install and configure the libpam-umask package.
@@ -8,7 +7,18 @@ umask 022
 
 # Environmental Variables
 # PATH
-export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+# enable /usr/local/sbin
+if [[ ":$PATH:" != *":/usr/local/sbin:"* ]]; then
+    export PATH="/usr/local/sbin:$PATH"
+fi
+# enable $HOME/.local/bin
+if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+    export PATH="$HOME/.local/bin:$PATH"
+fi
+# enable latex
+if [ -e /usr/local/opt/texinfo/bin ] && [[ ":$PATH:" != *":/usr/local/opt/texinfo/bin:"* ]]; then
+    export PATH="/usr/local/opt/texinfo/bin:$PATH"
+fi
 
 # XDG Base Directory
 export XDG_CONFIG_HOME="$HOME/.config"
@@ -27,13 +37,16 @@ if type "bat" > /dev/null 2>&1; then
     export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 fi
 
-# Aliases
+# Homebrew
+if [ -e /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 
 
-# if running bash, include .bashrc if it exists
+# If running bash, include .bashrc if it exists
 if [ -n "$BASH_VERSION" ] && [ -f "$HOME/.bashrc" ]; then
     source "$HOME/.bashrc"
 fi
 
-# finish with 0
+# Finish with 0
 echo "" > /dev/null
