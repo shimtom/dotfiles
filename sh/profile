@@ -5,19 +5,21 @@
 # for ssh logins, install and configure the libpam-umask package.
 umask 022
 
+
 # Environmental Variables
+
 # PATH
-# enable /usr/local/sbin
-if [[ ":$PATH:" != *":/usr/local/sbin:"* ]]; then
-    export PATH="/usr/local/sbin:$PATH"
-fi
-# enable $HOME/.local/bin
+# $HOME/.local/bin
 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
     export PATH="$HOME/.local/bin:$PATH"
 fi
-# enable latex
+# Latex
 if [ -e /usr/local/opt/texinfo/bin ] && [[ ":$PATH:" != *":/usr/local/opt/texinfo/bin:"* ]]; then
     export PATH="/usr/local/opt/texinfo/bin:$PATH"
+fi
+# Homebrew
+if [ -e /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
 # XDG Base Directory
@@ -35,11 +37,6 @@ esac
 # MANPAGER
 if type "bat" > /dev/null 2>&1; then
     export MANPAGER="sh -c 'col -bx | bat -l man -p'"
-fi
-
-# Homebrew
-if [ -e /opt/homebrew/bin/brew ]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
 
