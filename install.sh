@@ -110,8 +110,8 @@ backup() {
     echo "Creating backup directory at $BACKUP_DIR"
     mkdir -p "$BACKUP_DIR" "$BACKUP_DIR/config"
 
-    # backup bash
-    for file in "$DOTFILES/bash/bashrc" "$DOTFILES/bash/bash_profile" "$DOTFILES/bash/bash_logout"; do
+    # backup sh, bash and zsh
+    for file in "$DOTFILES/sh/profile" "$DOTFILES/bash/bashrc" "$DOTFILES/bash/bash_logout" "$DOTFILES/zsh/zshrc"; do
         filename=".$(basename "$file")"
         target="$HOME/$filename"
         if [ -f "$target" ]; then
@@ -155,6 +155,11 @@ case "$1" in
         setup_config
         ;;
     git)
+        setup_git
+        ;;
+    develop)
+        setup_sh
+        setup_config
         setup_git
         ;;
     all)
