@@ -24,12 +24,12 @@
   amend = commit -a --amend
   delete = !"f(){ git filter-branch --tree-filter \"rm -f -r ${@}\" HEAD; git gc --aggressive --prune=now; };f"
 [pager]
-  diff = delta
-  log = delta
-  reflog = delta
-  show = delta
+  diff = "if type 'delta' > /dev/null 2>&1; then cmd=delta; else cmd='less'; fi; $cmd"
+  log = "if type 'delta' > /dev/null 2>&1; then cmd=delta; else cmd='less'; fi; $cmd"
+  reflog = "if type 'delta' > /dev/null 2>&1; then cmd=delta; else cmd='less'; fi; $cmd"
+  show = "if type 'delta' > /dev/null 2>&1; then cmd=delta; else cmd='less'; fi; $cmd"
 [interactive]
-  diffFilter = delta --color-only --features=interactive
+  diffFilter = "if type 'delta' > /dev/null 2>&1; then cmd='delta --color-only --features=interactive'; else cmd=less; fi; $cmd"
 [delta]
   line-numbers = true
   side-by-side = true
