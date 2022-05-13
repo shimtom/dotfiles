@@ -5,6 +5,10 @@ autoload -U compinit
 compinit
 
 
+# Enable interactive comments
+setopt interactivecomments
+
+
 # Custom history
 # sync history immediately between all session
 setopt share_history
