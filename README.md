@@ -2,7 +2,36 @@
 
 [![lint](https://github.com/shimtom/dotfiles/actions/workflows/lint.yml/badge.svg)](https://github.com/shimtom/dotfiles/actions/workflows/lint.yml) [![macos](https://github.com/shimtom/dotfiles/actions/workflows/macos.yml/badge.svg)](https://github.com/shimtom/dotfiles/actions/workflows/macos.yml)
 
-Install my dotfiles.
+Install **Only** dotfiles and never install any tools or plugins.
+All configuration files don't raise error when some tools are missing.
+
+
+## What's in it?
+* shell configration
+    * sh/profile
+        - Set environmental variables, common in bash, zsh and fish.
+    * bash
+        - Enable completions.
+        - Improve history settings.
+        - Set simple colored prompt.
+        - Add colore support of ls and so on.
+        - Add peco keybinding if peco is enabled.
+        - Clear the screen when leaving the console.
+    * zsh
+        - Enable completions.
+        - Improve history settings.
+        - Set simple colored prompt.
+        - Add colore support of ls and so on.
+        - Add peco keybinding if peco is enabled.
+    * fish
+        - Set simple colored prompt.
+        - Add some plugins.
+            - fisher
+            - z
+            - fzf
+            - plugin-peco
+            - theme-bobthefish
+
 
 ## Installation
 
@@ -26,10 +55,15 @@ brew install font-hackgen font-hackgen-nerd
 # install fish and fisher plugins
 brew install fish
 # using fish as default shell with .profile. cf. https://superuser.com/questions/446925/re-use-profile-for-fish
-cat <<EOF > /usr/local/bin/fishlogin
+sudo cat <<"EOF" > /usr/local/bin/fishlogin
 #!/bin/bash -l
+
+# Keep inherited PATH order
+export INHERITED_PATH=$PATH
+
 exec -l fish "$@"
 EOF
+
 sudo chmod a+rx /usr/local/bin/fishlogin
 echo /usr/local/bin/fishlogin | sudo tee -a /etc/shells
 chsh -s /usr/local/bin/fishlogin $USER
@@ -66,8 +100,12 @@ sudo apt-add-repository ppa:fish-shell/release-3
 sudo apt update
 sudo apt install -y fish
 # using fish as default shell with .profile. cf. https://superuser.com/questions/446925/re-use-profile-for-fish
-sudo tee /usr/local/bin/fishlogin <<EOF
+sudo cat /usr/local/bin/fishlogin <<"EOF"
 #!/bin/bash -l
+
+# Keep inherited PATH order
+export INHERITED_PATH=$PATH
+
 exec -l fish "$@"
 EOF
 sudo chmod a+rx /usr/local/bin/fishlogin
