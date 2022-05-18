@@ -153,7 +153,7 @@ link() {
     if "$FORCE"; then
         execute "ln -sf $source $target" "link '$source' → '$target'"
     else
-        if [ -e "$target" ]; then
+        if [ -e "$target" ] && [ ! -L "$target" ]; then
             if "$BACKUP"; then
                 backup_target="$(get_unique_name "$BACKUP_DIR"/"$(basename "$target" | sed -e "s/^\.//")")"
                 execute "mv $target $backup_target" "backup '$target' → '$backup_target'"
