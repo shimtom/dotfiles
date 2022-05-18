@@ -157,6 +157,7 @@ link() {
             if "$BACKUP"; then
                 backup_target="$(get_unique_name "$BACKUP_DIR"/"$(basename "$target" | sed -e "s/^\.//")")"
                 execute "mv $target $backup_target" "backup '$target' → '$backup_target'"
+                execute "ln -s $source $target" "link '$file' → '$target'"
             elif "$INTERACTIVE"; then
                 ask_for_confirmation "'$target' already exists, do you want to overwrite it?"
                 if [[ $REPLY =~ ^([Yy])$ ]]; then
