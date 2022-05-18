@@ -151,26 +151,26 @@ link() {
     local -r target="$2"
 
     if "$FORCE"; then
-        execute "ln -sf $source $target" "link '$file' → '$target'"
+        execute "ln -sf $source $target" "link '$source' → '$target'"
     else
         if [ -e "$target" ]; then
             if "$BACKUP"; then
                 backup_target="$(get_unique_name "$BACKUP_DIR"/"$(basename "$target" | sed -e "s/^\.//")")"
                 execute "mv $target $backup_target" "backup '$target' → '$backup_target'"
-                execute "ln -s $source $target" "link '$file' → '$target'"
+                execute "ln -s $source $target" "link '$source' → '$target'"
             elif "$INTERACTIVE"; then
                 ask_for_confirmation "'$target' already exists, do you want to overwrite it?"
                 if [[ $REPLY =~ ^([Yy])$ ]]; then
-                    execute "ln -sf $source $target" "link '$file' → '$target'"
+                    execute "ln -sf $source $target" "link '$source' → '$target'"
                 else
-                    print_skip "link '$file' → '$target'"
+                    print_skip "link '$source' → '$target'"
                 fi
             else
-                print_error "link '$file' → '$target'"
+                print_error "link '$source' → '$target'"
                 echo "'$target' already exists." | error_stream
             fi
         else
-            execute "ln -s $source $target" "link '$file' → '$target'"
+            execute "ln -s $source $target" "link '$source' → '$target'"
         fi
     fi
 
@@ -316,8 +316,11 @@ if "$MINIMUM"; then
     fi
 else
     setup_sh
-    setup_bash
-    setup_zsh
+    if [ "$(uname -s)" == "Darwin" ]; then
+        setup_zsh
+    else
+        setup_bash
+    fi
     setup_config
     setup_git
 fi

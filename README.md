@@ -38,7 +38,7 @@ All configuration files don't raise error when some tools are missing.
 ```bash
 git clone https://github.com/shimtom/dotfiles.git
 cd dotfiles
-./install.sh all
+./install.sh
 ```
 
 ## Optional Set Up
