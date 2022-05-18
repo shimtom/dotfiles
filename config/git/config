@@ -1,7 +1,7 @@
 [include]
   # A local gitconfig, outside of version control.
   # If the file doesn't exist it is silently ignored
-  path = ~/.gitconfig_local
+  path = ~/.gitconfig.local
 [core]
   autocrlf = input
   # Make `git rebase` safer on macOS
