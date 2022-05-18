@@ -11,25 +11,33 @@ on:
   workflow_dispatch:
 
 jobs:
-  linux_test_backup:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run install.sh backup
-        run: ./install.sh backup
   linux_test_minimum:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Run install.sh minimum
-        run: ./install.sh minimum
+      - name: Run install.sh --minimum
+        run: ./install.sh --minimum
       - name: Load .bashrc
         run: |
           bash ~/.bashrc 2> error.log; cat error.log
           if [ -s error.log ]; then false; fi
-  linux_test_link:
+  linux_test_minimum_backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run install.sh minimum
+        run: ./install.sh --minimum --backup
+      - name: Load .bashrc
+        run: |
+          bash ~/.bashrc 2> error.log; cat error.log
+          if [ -s error.log ]; then false; fi
+  linux_test_minimum_force:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Run install.sh link
-        run: ./install.sh link
+        run: ./install.sh --minimum --force
+      - name: Load .bashrc
+        run: |
+          bash ~/.bashrc 2> error.log; cat error.log
+          if [ -s error.log ]; then false; fi
