@@ -2,33 +2,13 @@
 
 set -u
 
-declare MINIMUM=false
-declare BACKUP=false
-declare FORCE=false
-declare INTERACTIVE=false
-
-declare n=0
-declare BACKUP_DIR=$HOME/dotfiles.backup
-while [ -e "$BACKUP_DIR" ]; do
-    BACKUP_DIR="${HOME}/dotfiles.backup-$((++n))"
-done
-declare -r DOTFILES="$(pwd)"
-
-declare -r COLOR_GRAY="\033[1;38;5;243m"
-declare -r COLOR_BLUE="\033[1;34m"
-declare -r COLOR_GREEN="\033[1;32m"
-declare -r COLOR_RED="\033[1;31m"
-declare -r COLOR_PURPLE="\033[1;35m"
-declare -r COLOR_YELLOW="\033[1;33m"
-declare -r COLOR_NONE="\033[0m"
 
 show_spinner() {
     local -r frames='/-\|'
     local -r n=${#frames}
 
     local -r pid="$1"
-    local -r cmds="$2"
-    local -r msg="$3"
+    local -r msg="$2"
 
     local i=0
     local frame_text=""
@@ -85,9 +65,9 @@ print_result() {
         # success
         echo -e "[${COLOR_GREEN}✔${COLOR_NONE}] $2"
     elif [ "$1" -eq 1 ]; then
-        print_error $2
+        print_error "$2"
     else
-        print_skip $2
+        print_skip "$2"
     fi
 
     return "$1"
@@ -136,7 +116,7 @@ execute() {
 
     # Show a spinner if the commands
     # require more time to complete.
-    show_spinner "$cmd_pid" "$cmd" "$msg"
+    show_spinner "$cmd_pid" "$msg"
 
     # Wait for the commands to no longer be executing
     # in the background, and then get their exit code.
@@ -155,7 +135,7 @@ execute() {
     return $exit_code
 }
 
-unique_name() {
+get_unique_name() {
     local -r original_name="$1"
     local n=0
     local name="$original_name"
@@ -171,25 +151,25 @@ link() {
     local -r target="$2"
 
     if "$FORCE"; then
-        execute 'ln -sf "$source" "$target"' "link '$file' → '$target'"
+        execute "ln -sf $source $target" "link '$file' → '$target'"
     else
         if [ -e "$target" ]; then
             if "$BACKUP"; then
-                backup_target=$(unique_name $BACKUP_DIR/$(basename $target | sed -e "s/^\.//"))
-                execute 'mv "$target" "$backup_target"' "backup '$target' → '$backup_target'"
+                backup_target="$(get_unique_name "$BACKUP_DIR"/"$(basename "$target" | sed -e "s/^\.//")")"
+                execute "mv $target $backup_target" "backup '$target' → '$backup_target'"
             elif "$INTERACTIVE"; then
                 ask_for_confirmation "'$target' already exists, do you want to overwrite it?"
                 if [[ $REPLY =~ ^([Yy])$ ]]; then
-                    execute 'ln -sf "$source" "$target"' "link '$file' → '$target'"
+                    execute "ln -sf $source $target" "link '$file' → '$target'"
                 else
                     print_skip "link '$file' → '$target'"
                 fi
             else
                 print_error "link '$file' → '$target'"
-                echo -e "↳ ${COLOR_RED}ERROR: '$target' already exists.${COLOR_NONE}" 1>&2
+                echo "'$target' already exists." | error_stream
             fi
         else
-            execute 'ln -s "$source" "$target"' "link '$file' → '$target'"
+            execute "ln -s $source $target" "link '$file' → '$target'"
         fi
     fi
 
@@ -223,18 +203,19 @@ setup_zsh() {
 }
 
 setup_config() {
+    local -r XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-~/.config}
+    local target
+
     print_title "\$XDG_CONFIG_HOME/config"
 
-    XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-~/.config}
-
     if [ ! -d "$XDG_CONFIG_HOME" ]; then
-        execute 'mkdir -p "$XDG_CONFIG_HOME"' "make \$XDG_CONFIG_HOME directory: '$XDG_CONFIG_HOME'"
+        execute "mkdir -p $XDG_CONFIG_HOME" "make \$XDG_CONFIG_HOME directory: '$XDG_CONFIG_HOME'"
     fi
 
-    for config in `find -H "$DOTFILES/config" -mindepth 1 -maxdepth 1`; do
+    while IFS= read -r -d '' config; do
         target="$XDG_CONFIG_HOME/$(basename "$config")"
         link "$config" "$target"
-    done
+    done <   <(find -H "$DOTFILES/config" -mindepth 1 -maxdepth 1 -print0)
 
 }
 
@@ -249,24 +230,44 @@ setup_git() {
     ask "Enter git user email [$default_email]"
     email="${REPLY:-$default_email}"
 
-    execute 'git config -f ~/.gitconfig.local user.name "$name"' "set git user name: '$name'"
-    execute 'git config -f ~/.gitconfig.local user.email "$email"' "set git user email: '$name'"
+    execute "git config -f ~/.gitconfig.local user.name $name" "set git user name: '$name'"
+    execute "git config -f ~/.gitconfig.local user.email $email" "set git user email: '$email'"
 
     if [ "$(uname -s)" == "Darwin" ]; then
-        execute 'git config -f ~/.gitconfig.local credential.helper "osxkeychain"' "set git credential helper: 'osxkeychain'"
+        execute "git config -f ~/.gitconfig.local credential.helper 'osxkeychain'" "set git credential helper: 'osxkeychain'"
     else
         ask_for_confirmation "Save user and password to an unencrypted file to avoid writing?"
         if [[ $REPLY =~ ^([Yy])$ ]]; then
-            execute 'git config -f ~/.gitconfig.local credential.helper "store"' "set git credential helper: 'store'"
+            execute "git config -f ~/.gitconfig.local credential.helper 'store'" "set git credential helper: 'store'"
         else
-            execute 'git config -f ~/.gitconfig.local credential.helper "cache --timeout 3600"' "set git credential helper: 'cache --timeout 3600'"
+            execute "git config -f ~/.gitconfig.local credential.helper 'cache --timeout 3600'" "set git credential helper: 'cache --timeout 3600'"
         fi
     fi
 }
 
 
+# shellcheck disable=SC2034 disable=SC2155
+{
+    MINIMUM=false
+    BACKUP=false
+    FORCE=false
+    INTERACTIVE=false
+
+    readonly DOTFILES="$(pwd)"
+    readonly BACKUP_DIR="$(get_unique_name "$HOME/dotfiles.backup")"
+
+    readonly COLOR_GRAY="\033[1;38;5;243m"
+    readonly COLOR_BLUE="\033[1;34m"
+    readonly COLOR_GREEN="\033[1;32m"
+    readonly COLOR_RED="\033[1;31m"
+    readonly COLOR_PURPLE="\033[1;35m"
+    readonly COLOR_YELLOW="\033[1;33m"
+    readonly COLOR_NONE="\033[0m"
+}
+
+
 for opt in "$@"; do
-    case $opt in
+    case "$opt" in
         --minimum)
             MINIMUM=true
             ;;
@@ -299,22 +300,23 @@ for opt in "$@"; do
     esac
 done
 
-setup_sh
-# if "$BACKUP" &&  [ ! -e "$BACKUP_DIR" ]; then
-#     execute 'mkdir -p "$BACKUP_DIR"' "make backup directory: '$BACKUP_DIR'"
-# fi
 
-# if "$MINIMUM"; then
-#     setup_sh
-#     if [ "$(uname -s)" == "Darwin" ]; then
-#         setup_zsh
-#     else
-#         setup_bash
-#     fi
-# else
-#     setup_sh
-#     setup_bash
-#     setup_zsh
-#     setup_config
-#     setup_git
-# fi
+if "$BACKUP" &&  [ ! -e "$BACKUP_DIR" ]; then
+    print_title "Backup Preparation"
+    execute "mkdir -p $BACKUP_DIR" "make backup directory: '$BACKUP_DIR'"
+fi
+
+if "$MINIMUM"; then
+    setup_sh
+    if [ "$(uname -s)" == "Darwin" ]; then
+        setup_zsh
+    else
+        setup_bash
+    fi
+else
+    setup_sh
+    setup_bash
+    setup_zsh
+    setup_config
+    setup_git
+fi
