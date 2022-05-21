@@ -7,7 +7,7 @@ on:
       - .github/workflows/macos.yml
       - install.sh
       - sh/*
-      - bash/*
+      - zsh/*
   workflow_dispatch:
 
 jobs:
@@ -15,21 +15,29 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Run install.sh backup
-        run: ./install.sh backup
+      - name: Run install.sh --minimum
+        run: ./install.sh --minimum
+      - name: Load .zshrc
+        run: |
+          zsh ~/.zshrc 2> error.log; cat error.log
+          if [ -s error.log ]; then false; fi
   macos_test_minimum:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Run install.sh minimum
-        run: ./install.sh minimum
-      - name: Load .bashrc
+      - name: Run install.sh --minimum --backup
+        run: ./install.sh --minimum --backup
+      - name: Load .zshrc
         run: |
-          bash ~/.bashrc 2> error.log; cat error.log
+          zsh ~/.zshrc 2> error.log; cat error.log
           if [ -s error.log ]; then false; fi
   macos_test_link:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Run install.sh link
-        run: ./install.sh link
+      - name: Run install.sh --minimum --force
+        run: ./install.sh --minimum --backup
+      - name: Load .zshrc
+        run: |
+          zsh ~/.zshrc 2> error.log; cat error.log
+          if [ -s error.log ]; then false; fi

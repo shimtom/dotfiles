@@ -3,7 +3,7 @@
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
-      *) if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+      *) if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
              return
          else
              exit 0
