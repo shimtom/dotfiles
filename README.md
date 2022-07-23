@@ -55,7 +55,7 @@ brew install font-hackgen font-hackgen-nerd
 # install fish and fisher plugins
 brew install fish
 # using fish as default shell with .profile. cf. https://superuser.com/questions/446925/re-use-profile-for-fish
-sudo cat <<"EOF" > /usr/local/bin/fishlogin
+sudo tee /usr/local/bin/fishlogin << "EOF" > /dev/null
 #!/bin/bash -l
 
 # Keep inherited PATH order
@@ -100,7 +100,7 @@ sudo apt-add-repository ppa:fish-shell/release-3
 sudo apt update
 sudo apt install -y fish
 # using fish as default shell with .profile. cf. https://superuser.com/questions/446925/re-use-profile-for-fish
-sudo cat /usr/local/bin/fishlogin <<"EOF"
+sudo tee /usr/local/bin/fishlogin << "EOF" > /dev/null
 #!/bin/bash -l
 
 # Keep inherited PATH order
