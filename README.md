@@ -155,7 +155,7 @@ sudo dpkg -i $(basename $url)
 rm -f $(basename $url)
 
 # procs
-url=$(curl -s https://api.github.com/repos/dalance/procs/releases/latest | grep -E "browser_download_url.*procs-v[0-9]+\.[0-9]+\.[0-9]+-x86_64-lnx\.zip" | cut -d : -f 2,3 | tr -d \")
+url=$(curl -s https://api.github.com/repos/dalance/procs/releases/latest | grep -E "browser_download_url.*procs-v[0-9]+\.[0-9]+\.[0-9]+-x86_64-linux\.zip" | cut -d : -f 2,3 | tr -d \")
 wget $url
 unzip $(basename $url)
 sudo chown root:root procs
