@@ -125,9 +125,9 @@ sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.
 # install commands
 sudo apt install -y bat fd-find fzf peco ripgrep tree
 
-# bat, hexyl, ripgrep
+# bat, hexyl
 ## Ubuntu 21.04
-sudo apt install -y hexyl ripgrep
+sudo apt install -y hexyl
 ## Ubuntu 20.04
 # # see https://github.com/sharkdp/bat/issues/938
 # sudo apt install -o Dpkg::Options::="--force-overwrite" hexyl ripgrep
