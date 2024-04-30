@@ -289,10 +289,10 @@ for opt in "$@"; do
             echo "Install dotfiles."
             echo
             echo " --minimum          install only standard shell dotfiles"
-            echo " -b, --backup       make a backup of each existing destnation"
-            echo " -i, --interactive  prompt whether to remove destinations"
-            echo " -f, --force        remove existing destinations"
-            echo " -h, --help         display this help and exist"
+            echo " -b, --backup       make backup if destination exists"
+            echo " -i, --interactive  prompt whether to remove all destinations"
+            echo " -f, --force        remove all destinations and install dotfiles"
+            echo " -h, --help         display this help and exit"
             exit 0
             ;;
         *)
