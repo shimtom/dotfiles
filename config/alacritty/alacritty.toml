@@ -1,10 +1,5 @@
+[general]
 import = ["~/.config/alacritty/dracula.toml"]
-
-[shell]
-program = "C:\\Windows\\System32\\wsl.exe"
-args = [
-    "-d Ubuntu","--cd ~"
-]
 
 [window]
 dimensions = { columns = 80, lines = 20 }
