@@ -316,11 +316,8 @@ if "$MINIMUM"; then
     fi
 else
     setup_sh
-    if [ "$(uname -s)" == "Darwin" ]; then
-        setup_zsh
-    else
-        setup_bash
-    fi
+    setup_zsh
+    setup_bash
     setup_config
     setup_git
 fi
