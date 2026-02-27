@@ -151,27 +151,21 @@ link() {
     local -r target="$2"
 
     if "$FORCE"; then
-        execute "ln -sf $source $target" "link '$source' → '$target'"
-    else
-        if [ -e "$target" ] && [ ! -L "$target" ]; then
-            if "$BACKUP"; then
-                backup_target="$(get_unique_name "$BACKUP_DIR"/"$(basename "$target" | sed -e "s/^\.//")")"
-                execute "mv $target $backup_target" "backup '$target' → '$backup_target'"
-                execute "ln -s $source $target" "link '$source' → '$target'"
-            elif "$INTERACTIVE"; then
-                ask_for_confirmation "'$target' already exists, do you want to overwrite it?"
-                if [[ $REPLY =~ ^([Yy])$ ]]; then
-                    execute "ln -sf $source $target" "link '$source' → '$target'"
-                else
-                    print_skip "link '$source' → '$target'"
-                fi
-            else
-                print_error "link '$source' → '$target'"
-                echo "'$target' already exists." | error_stream
-            fi
-        else
-            execute "ln -s $source $target" "link '$source' → '$target'"
+        execute "rm -rf $target && ln -sf $source $target" "link '$source' → '$target'"
+        return 0
+    fi
+
+    if [ -e "$target" ]; then
+        if [ -L "$target" ]; then
+            execute "unlink $target" "Unlink '$target' because it is already a link."
         fi
+
+        if [ ! -L "$target" ] && "$BACKUP" ; then
+            backup_target="$(get_unique_name "$BACKUP_DIR"/"$(basename "$target" | sed -e "s/^\.//")")"
+            execute "mv $target $backup_target" "backup '$target' → '$backup_target'"
+        fi
+
+        execute "ln -s $source $target" "link '$source' → '$target'"
     fi
 
     return 0
@@ -252,7 +246,6 @@ setup_git() {
     MINIMUM=false
     BACKUP=false
     FORCE=false
-    INTERACTIVE=false
 
     readonly DOTFILES="$(pwd)"
     readonly BACKUP_DIR="$(get_unique_name "$HOME/dotfiles.backup")"
@@ -278,9 +271,6 @@ for opt in "$@"; do
         -f | --force)
             FORCE=true
             ;;
-        -i | --interactive)
-            INTERACTIVE=true
-            ;;
         -h | --help)
             echo "Usage:"
             echo "  install.sh [OPTION]"
@@ -290,7 +280,6 @@ for opt in "$@"; do
             echo
             echo " --minimum          install only standard shell dotfiles"
             echo " -b, --backup       make backup if destination exists"
-            echo " -i, --interactive  prompt whether to remove all destinations"
             echo " -f, --force        remove all destinations and install dotfiles"
             echo " -h, --help         display this help and exit"
             exit 0
