@@ -1,14 +1,26 @@
 # ~/.profile: executed by the command interpreter for login shells.
-# This file is used by bash, zsh and fish shell in common.
 
 # the default umask is set in /etc/profile; for setting the umask
 # for ssh logins, install and configure the libpam-umask package.
 umask 022
 
 
-# Environmental Variables
+# set LANG
+if locale -a | grep -q -i ja_JP.UTF-8 ; then
+    export LANG=ja_JP.UTF-8
+elif locale -a | grep -q -i -e C.UTF8 -e C.UTF-8 ; then
+    export LANG=C.UTF-8
+else
+    export LANG=C
+fi
 
-# PATH
+# set XDG Base Directory
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_STATE_HOME="$HOME/.local/state"
+
+# set PATH
 # $HOME/.local/bin
 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
     export PATH="$HOME/.local/bin:$PATH"
@@ -17,26 +29,20 @@ fi
 if [ -e /usr/local/opt/texinfo/bin ] && [[ ":$PATH:" != *":/usr/local/opt/texinfo/bin:"* ]]; then
     export PATH="/usr/local/opt/texinfo/bin:$PATH"
 fi
+# fzf
+if [ -e $HOME/.fzf/bin ]; then
+    export PATH="$HOME/.fzf/bin:$PATH"
+fi
 # Homebrew
 if [ -e /opt/homebrew/bin/brew ]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-# XDG Base Directory
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_CACHE_HOME="$HOME/.cache"
-export XDG_DATA_HOME="$HOME/.local/share"
-export XDG_STATE_HOME="$HOME/.local/state"
-
-# LANG
-case $TERM in
-    linux) export LANG=C ;;
-    *)     locale -a | grep -q ja_JP.UTF-8 && export LANG=ja_JP.UTF-8 ;;
-esac
-
+# set MANPAGER
 # MANPAGER
 if type "bat" > /dev/null 2>&1; then
     export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+    export MANROFFOPT="-c"
 fi
 
 # SSH
@@ -46,8 +52,27 @@ if [ -z "$SSH_AUTH_SOCK" ] && type "ssh-agent" > /dev/null 2>&1; then
         # Launch a new instance of the agent
         ssh-agent -s &> $HOME/.ssh/ssh-agent
     fi
-    eval `cat $HOME/.ssh/ssh-agent`
 fi
+
+# set fzf
+if type "fzf" > /dev/null 2>&1; then
+    case $(basename "$(readlink "/proc/$$/exe")") in
+        bash) eval "$(fzf --bash)" ;;
+        zsh)  source <(fzf --zsh) ;;
+        fish) fzf --fish | source ;;
+    esac
+fi
+
+# set startship
+if type "starship" > /dev/null 2>&1; then
+    case $(basename "$(readlink "/proc/$$/exe")") in
+        bash) eval "$(starship init bash)" ;;
+        zsh)  eval "$(starship init zsh)" ;;
+        fish) starship init fish | source ;;
+    esac
+    export STARSHIP_CONFIG=${XDG_CONFIG_HOME}/starship/starship.toml
+fi
+
 
 
 # If running bash, include .bashrc if it exists
