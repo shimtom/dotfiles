@@ -1,3 +1,4 @@
+# shellcheck disable=SC2148
 # ~/.profile: executed by the command interpreter for login shells.
 
 # the default umask is set in /etc/profile; for setting the umask
@@ -30,7 +31,7 @@ if [ -e /usr/local/opt/texinfo/bin ] && [[ ":$PATH:" != *":/usr/local/opt/texinf
     export PATH="/usr/local/opt/texinfo/bin:$PATH"
 fi
 # fzf
-if [ -e $HOME/.fzf/bin ]; then
+if [ -e "$HOME"/.fzf/bin ]; then
     export PATH="$HOME/.fzf/bin:$PATH"
 fi
 # Homebrew
@@ -45,20 +46,13 @@ if type "bat" > /dev/null 2>&1; then
     export MANROFFOPT="-c"
 fi
 
-# SSH
-if [ -z "$SSH_AUTH_SOCK" ] && type "ssh-agent" > /dev/null 2>&1; then
-    RUNNING_AGENT="`ps -ax | grep 'ssh-agent -s' | grep -v grep | wc -l | tr -d '[:space:]'`"
-    if [ "$RUNNING_AGENT" = "0" ]; then
-        # Launch a new instance of the agent
-        ssh-agent -s &> $HOME/.ssh/ssh-agent
-    fi
-fi
-
 # set fzf
 if type "fzf" > /dev/null 2>&1; then
     case $(basename "$(readlink "/proc/$$/exe")") in
         bash) eval "$(fzf --bash)" ;;
-        zsh)  source <(fzf --zsh) ;;
+        zsh)
+            # shellcheck source=/dev/null
+            source <(fzf --zsh) ;;
         fish) fzf --fish | source ;;
     esac
 fi
@@ -73,11 +67,10 @@ if type "starship" > /dev/null 2>&1; then
     export STARSHIP_CONFIG=${XDG_CONFIG_HOME}/starship/starship.toml
 fi
 
-
-
 # If running bash, include .bashrc if it exists
 if [ -n "$BASH_VERSION" ] && [ -f "$HOME/.bashrc" ]; then
-    source "$HOME/.bashrc"
+    # shellcheck source=/dev/null
+    source "$HOME"/.bashrc
 fi
 
 # Finish with 0
