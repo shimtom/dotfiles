@@ -1,10 +1,5 @@
+[general]
 import = ["~/AppData/Roaming/alacritty/dracula.toml"]
-
-[shell]
-program = "C:\\Windows\\System32\\wsl.exe"
-args = [
-    "-d Ubuntu","--cd ~"
-]
 
 [window]
 dimensions = { columns = 80, lines = 20 }
@@ -14,3 +9,9 @@ blur = true
 [font]
 normal = { family = "HackGen Console NF", style = "Regular" }
 size = 14.0
+
+[terminal.shell]
+program = "C:\\Windows\\System32\\wsl.exe"
+args = [
+    "-d Ubuntu","--cd ~"
+]
